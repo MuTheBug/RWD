@@ -41,11 +41,9 @@ def get_symbols():
 
 
 
-def ichi_strategy():
-    while True:
-        try:
-            tickers = get_symbols()
-            for sy in tickers:
+def ichi_strategy(sy):
+
+
                 while True:
                     try:
                         # 1 Day timeframe
@@ -60,7 +58,7 @@ def ichi_strategy():
                         kline = get_kline(sy,timeframe='1h')
                         ich = calculate_ichi(kline)
                         third_res = ich['long_entry'].iloc[-1]
-                        greatest_level = ich['pullback_50'].iloc[-1]
+                        greatest_level = ich['pullback_618'].iloc[-1]
                         if first_res and second_res and third_res and greatest_level:
                             print(sy + " is a good trade ++++++++++++++++++++")
                             # send_to_telegram(f'{sy} f{msg}')
@@ -70,8 +68,7 @@ def ichi_strategy():
                     except Exception as e:
                         print(e)
                         break
-        except Exception as e:
-            print(e)
+
                 
             
 
@@ -143,7 +140,20 @@ def send_to_telegram(message):
         print(e)
 
 
-ichi_strategy()
+# ichi_strategy()
+
+
+def main():
+  tickers = get_symbols()
+  
+  with concurrent.futures.ThreadPoolExecutor() as executor:
+    results = [executor.submit(ichi_strategy, sy) for sy in tickers]
+  
+  for f in concurrent.futures.as_completed(results):
+    f.result()
+      
+if __name__ == '__main__':
+  main()
 
 
 
@@ -156,29 +166,3 @@ ichi_strategy()
 
 
 
-
-
-
-
-def sma250_strategy():
-
-    tickers = get_symbols()
-    while True:
-        for sy in tickers:
-            while True:
-                try:
-                    data = get_kline(sy)
-                    before_last_close = float(data['close'].iloc[-2])
-                    last_close = float(data['close'].iloc[-1])
-                    before_last_sma = float(data['sma250'].iloc[-2])
-                    last_sma = float(data['sma250'].iloc[-1])
-
-                    conditions = before_last_close<before_last_sma and last_close > last_sma
-                    if conditions:
-                        print(sy + " is a good trade ++++++++++++++++++++")
-                    else:
-                        print(f"skipping {sy}")
-                    break
-                except Exception as e:
-
-                    break
