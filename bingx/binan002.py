@@ -60,22 +60,18 @@ def ichi_strategy():
                         # 1 hour timeframe
                         kline = get_kline(sy,timeframe='1h')
                         ich = calculate_ichi(kline)
-                        uptrend = ich['uptrend'].iloc[-1]
-                        third_res_long = ich['long_entry'].iloc[-1]
-                        third_res = ich['pullback_50'].iloc[-1]
-                        last_level = ich['pullback_236'].iloc[-1]
-                        second_level = ich['pullback_382'].iloc[-1]
-                        greatest_level = ich['pullback_618'].iloc[-1]
+                        third_res = ich['long_entry'].iloc[-1]
+                        greatest_level = ich['pullback_50'].iloc[-1]
 
 
-                        kline = get_kline(sy,timeframe='15m')
-                        ich = calculate_ichi(kline)
-                        uptrend = ich['uptrend'].iloc[-1]
-                        four_res = ich['long_entry'].iloc[-1]
+                        # kline = get_kline(sy,timeframe='15m')
+                        # ich = calculate_ichi(kline)
+                        # uptrend = ich['uptrend'].iloc[-1]
+                        # four_res = ich['long_entry'].iloc[-1]
+                        # fib = ich['pullback_50'].iloc[-1]
 
-                        msg = f"reached: 0.816"#{true_variables}""
-                        fin = uptrend and greatest_level
-                        if first_res and second_res and third_res_long and four_res:#and fin:
+
+                        if first_res and second_res and third_res and greatest_level:
                             print(sy + " is a good trade ++++++++++++++++++++")
                             # send_to_telegram(f'{sy} f{msg}')
                         else:
@@ -129,15 +125,15 @@ def calculate_ichi(data):
     data['uptrend'] = (data['price_above_cloud'] & 
                     data['cline_above_bline'] &  
                     data['spanA_above_spanB'])
-    swing_high = data['high'].rolling(20).max()
-    swing_low = data['low'].rolling(20).min()
+    swing_high = data['high'].rolling(40).max()
+    swing_low = data['low'].rolling(40).min()
     swing = swing_high - swing_low
     level_236 = swing * 0.236
     level_382 = swing * 0.382
     level_618 = swing * 0.618
     data['pullback_236'] = data['low'] <= (swing_high - level_236)
     data['pullback_382'] = data['low'] <= (swing_high - level_382)
-    level_50 = swing * 0.50 # 50% level
+    level_50 = swing * 0.55 # 50% level
     data['pullback_50'] = data['low'] <= (swing_high - level_50) # 50% level
     data['pullback_618'] = data['low'] <= (swing_high - level_618) # 618 level
     return data
