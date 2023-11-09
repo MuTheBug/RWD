@@ -21,8 +21,11 @@ def get_kline(symbol='IMX-USDT',timeframe='4h'):
         'start_time':nine_days_ago,
         'end_time':now_seconds,
     }
-    data = requests.get(url=url,params=params).json()['data'][::-1]
+    data = requests.get(url=url,params=params)
 
+    print(data.url)
+    data=data.json()['data'][::-1]
+    
     data = pd.DataFrame(data)
     data['time'] =pd.to_datetime(data['time'],unit='ms')
     data['sma250'] = ta.sma(data['close'],length=250)
@@ -32,11 +35,17 @@ def get_kline(symbol='IMX-USDT',timeframe='4h'):
 
 
 def get_symbols():
-        url= "https://open-api.bingx.com/openApi/swap/v2/quote/ticker"
+        try:
+            url= "https://open-api.bingx.com/openApi/swap/v2/quote/ticker"
 
-        tickers = requests.get(url=url).json()['data']
-        data = pd.DataFrame(tickers)['symbol']
-        return data.to_list()
+            tickers = requests.get(url=url).json()['data']
+            data = pd.DataFrame(tickers)['symbol']
+            print(data)
+            return data.to_list()
+        
+        except Exception as e:
+
+            print(e)
 
 
 
@@ -143,8 +152,8 @@ def send_to_telegram(message):
 # ichi_strategy()
 
 
-def main():
-  tickers = get_symbols()
+def main(tickers):
+  
   
   with concurrent.futures.ThreadPoolExecutor() as executor:
     results = [executor.submit(ichi_strategy, sy) for sy in tickers]
@@ -153,7 +162,9 @@ def main():
     f.result()
       
 if __name__ == '__main__':
-  main()
+  tickers = get_symbols()
+
+  main(tickers)
 
 
 
