@@ -69,7 +69,7 @@ def ichi_strategy(sy):
                         greatest_level = ich['pullback_618'].iloc[-1]
                         if first_res and second_res and third_res and greatest_level:
                             print(sy + " is a good trade ++++++++++++++++++++")
-                            # send_to_telegram(f'{sy} f{msg}')
+                            send_to_telegram(f'{sy} is at 0.618')
                         else:
                             print(f"skipping {sy}")
                         break
