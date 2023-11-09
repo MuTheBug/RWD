@@ -2,8 +2,7 @@ from apis import *
 import pandas as pd
 from datetime import datetime
 import pandas_ta as ta
-
-# from bingX import BingX
+import concurrent.futures
 import requests
 
 
@@ -62,15 +61,6 @@ def ichi_strategy():
                         ich = calculate_ichi(kline)
                         third_res = ich['long_entry'].iloc[-1]
                         greatest_level = ich['pullback_50'].iloc[-1]
-
-
-                        # kline = get_kline(sy,timeframe='15m')
-                        # ich = calculate_ichi(kline)
-                        # uptrend = ich['uptrend'].iloc[-1]
-                        # four_res = ich['long_entry'].iloc[-1]
-                        # fib = ich['pullback_50'].iloc[-1]
-
-
                         if first_res and second_res and third_res and greatest_level:
                             print(sy + " is a good trade ++++++++++++++++++++")
                             # send_to_telegram(f'{sy} f{msg}')
@@ -125,8 +115,8 @@ def calculate_ichi(data):
     data['uptrend'] = (data['price_above_cloud'] & 
                     data['cline_above_bline'] &  
                     data['spanA_above_spanB'])
-    swing_high = data['high'].rolling(40).max()
-    swing_low = data['low'].rolling(40).min()
+    swing_high = data['high'].rolling(20).max()
+    swing_low = data['low'].rolling(20).min()
     swing = swing_high - swing_low
     level_236 = swing * 0.236
     level_382 = swing * 0.382
