@@ -61,32 +61,23 @@ def ichi_strategy():
                         kline = get_kline(sy,timeframe='1h')
                         ich = calculate_ichi(kline)
                         uptrend = ich['uptrend'].iloc[-1]
+                        third_res_long = ich['long_entry'].iloc[-1]
                         third_res = ich['pullback_50'].iloc[-1]
                         last_level = ich['pullback_236'].iloc[-1]
                         second_level = ich['pullback_382'].iloc[-1]
                         greatest_level = ich['pullback_618'].iloc[-1]
-                        # # Create a list of variables
-                        # third_res = True 
-                        # last_level = False
-                        # second_level = False
-                        # greatest_level = False
-                        # true_variables = ""
-                        # if third_res:
-                        #     true_variables+=' 50 '
 
-                        # if last_level:
-                        #     true_variables+=' 236 '
-                        
-                        # if second_level:
-                        #     true_variables+=' 382 '
 
-                        # if greatest_level:
-                        #     true_variables+='618K'
+                        kline = get_kline(sy,timeframe='15m')
+                        ich = calculate_ichi(kline)
+                        uptrend = ich['uptrend'].iloc[-1]
+                        four_res = ich['long_entry'].iloc[-1]
+
                         msg = f"reached: 0.816"#{true_variables}""
                         fin = uptrend and greatest_level
-                        if first_res and second_res and fin:
+                        if first_res and second_res and third_res_long and four_res:#and fin:
                             print(sy + " is a good trade ++++++++++++++++++++")
-                            send_to_telegram(f'{sy} f{msg}')
+                            # send_to_telegram(f'{sy} f{msg}')
                         else:
                             print(f"skipping {sy}")
                         break
