@@ -143,7 +143,7 @@ def calculate_ichi(data):
     swing = swing_high - swing_low
     level_236 = swing * 0.236
     level_382 = swing * 0.382
-    level_618 = swing * 0.618
+    level_618 = swing * 0.55
     data['pullback_236'] = data['low'] <= (swing_high - level_236)
     data['pullback_382'] = data['low'] <= (swing_high - level_382)
     level_50 = swing * 0.50 # 50% level
