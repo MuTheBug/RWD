@@ -65,24 +65,24 @@ def ichi_strategy():
                         last_level = ich['pullback_236'].iloc[-1]
                         second_level = ich['pullback_382'].iloc[-1]
                         greatest_level = ich['pullback_618'].iloc[-1]
-                        # Create a list of variables
-                        third_res = True 
-                        last_level = False
-                        second_level = False
-                        greatest_level = False
-                        true_variables = ""
-                        if third_res:
-                            true_variables+=' 50 '
+                        # # Create a list of variables
+                        # third_res = True 
+                        # last_level = False
+                        # second_level = False
+                        # greatest_level = False
+                        # true_variables = ""
+                        # if third_res:
+                        #     true_variables+=' 50 '
 
-                        if last_level:
-                            true_variables+=' 236 '
+                        # if last_level:
+                        #     true_variables+=' 236 '
                         
-                        if second_level:
-                            true_variables+=' 382 '
+                        # if second_level:
+                        #     true_variables+=' 382 '
 
-                        if greatest_level:
-                            true_variables+='618K'
-                        msg = f"reached: {true_variables}"
+                        # if greatest_level:
+                        #     true_variables+='618K'
+                        msg = f"reached: 0.816"#{true_variables}""
                         fin = uptrend and greatest_level
                         if first_res and second_res and fin:
                             print(sy + " is a good trade ++++++++++++++++++++")
@@ -143,12 +143,12 @@ def calculate_ichi(data):
     swing = swing_high - swing_low
     level_236 = swing * 0.236
     level_382 = swing * 0.382
-    level_618 = swing * 0.55
+    level_618 = swing * 0.618
     data['pullback_236'] = data['low'] <= (swing_high - level_236)
     data['pullback_382'] = data['low'] <= (swing_high - level_382)
     level_50 = swing * 0.50 # 50% level
     data['pullback_50'] = data['low'] <= (swing_high - level_50) # 50% level
-    data['pullback_618'] = data['low'] <= (swing_high - level_618) # 50% level
+    data['pullback_618'] = data['low'] <= (swing_high - level_618) # 618 level
     return data
 
 
