@@ -23,7 +23,7 @@ def get_kline(symbol='IMX-USDT',timeframe='4h'):
     }
     data = requests.get(url=url,params=params)
 
-    print(data.url)
+    # print(data.url)
     data=data.json()['data'][::-1]
     
     data = pd.DataFrame(data)
@@ -40,7 +40,6 @@ def get_symbols():
 
             tickers = requests.get(url=url).json()['data']
             data = pd.DataFrame(tickers)['symbol']
-            print(data)
             return data.to_list()
         
         except Exception as e:
