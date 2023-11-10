@@ -67,9 +67,11 @@ def ichi_strategy(sy):
                         ich = calculate_ichi(kline)
                         third_res = ich['long_entry'].iloc[-1]
                         greatest_level = ich['pullback_618'].iloc[-1]
-                        if first_res and second_res and third_res and greatest_level:
+                        rsi  = ich['rsi'].iloc[-1] <= 45
+                        third_condition = ich['long_exit'].iloc[-1]
+                        if first_res and second_res and third_condition :#third_res and rsi:
                             print(sy + " is a good trade ++++++++++++++++++++")
-                            send_to_telegram(f'{sy} is at 0.618')
+                            # send_to_telegram(f'{sy} is at 0.618')
                         else:
                             print(f"skipping {sy}")
                         break
@@ -131,6 +133,7 @@ def calculate_ichi(data):
     level_50 = swing * 0.55 # 50% level
     data['pullback_50'] = data['low'] <= (swing_high - level_50) # 50% level
     data['pullback_618'] = data['low'] <= (swing_high - level_618) # 618 level
+    data['rsi'] = ta.rsi(close=data['close'])
     return data
 
 
@@ -162,7 +165,7 @@ def main(tickers):
       
 if __name__ == '__main__':
   tickers = get_symbols()
-
+#   print(tickers)
   main(tickers)
 
 
