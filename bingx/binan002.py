@@ -66,7 +66,7 @@ def ichi_strategy(sy):
                         kline = get_kline(sy,timeframe='1h')
                         ich = calculate_ichi(kline)
                         third_res = ich['long_entry'].iloc[-1]
-                        greatest_level = ich['pullback_236'].iloc[-1]
+                        greatest_level = ich['pullback_50'].iloc[-1]
                         if first_res and second_res and third_res and greatest_level:
                             print(sy + " is a good trade ++++++++++++++++++++")
                             send_to_telegram(f'{sy} is at 0.618')
