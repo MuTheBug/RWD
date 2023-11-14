@@ -41,7 +41,7 @@ def calculate_sma(data):
 
      return (float(previous_sma) > float(previous_close)) and (float(current_sma) < float(current_close))
 def sma_strategy(sy):
-      kline = get_kline(sy,timeframe='30m')
+      kline = get_kline(sy,timeframe='')
       sma = calculate_sma(kline)
       if sma:
         print(f"{sy} is a good trade ++++++++++++++++++++")
