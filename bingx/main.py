@@ -4,9 +4,10 @@ from datetime import datetime
 import pandas_ta as ta
 import concurrent.futures
 import requests
-
+import time
 
 def get_kline(symbol='IMX-USDT',timeframe='4h'):
+    
     now = datetime.now()
     now_seconds = int(now.timestamp()*1000) 
     nine_days = 350 * 24 * 60 * 60 *1000
@@ -16,7 +17,7 @@ def get_kline(symbol='IMX-USDT',timeframe='4h'):
     params={
         'symbol':f'{symbol}',
         'interval':timeframe,
-        'limit':900,
+        'limit':500,
         'start_time':nine_days_ago,
         'end_time':now_seconds,
     }
@@ -30,6 +31,7 @@ def get_kline(symbol='IMX-USDT',timeframe='4h'):
     data['sma250'] = ta.sma(data['close'],length=250)
     data['high'] = data.high.astype(float)
     data['low'] = data.low.astype(float)
+    # returns columns open, close, high, low, volume, and time
     return data
 
 
@@ -65,17 +67,31 @@ def ichi_strategy(sy):
                         kline = get_kline(sy,timeframe='1h')
                         ich = calculate_ichi(kline)
                         third_res = ich['long_entry'].iloc[-1]
+
+
+
                         kline = get_kline(sy,timeframe='15m')
                         ich = calculate_ichi(kline)
                         fourth_res = ich['long_entry'].iloc[-1]
+
+
+
                         # kline = get_kline(sy,timeframe='5m')
-                        # ema_cross = calculate_ema_cross(kline)
+                        # ich = calculate_ichi(kline)
+                        # fifth_res = not ich['long_entry'].iloc[-1]
+                        # kline = get_kline(sy,timeframe='3m')
+                        # ich = calculate_ichi(kline)
+                        # sixth_res = not ich['long_entry'].iloc[-1]
+
                         res = all([first_res,second_res,third_res,fourth_res])
                         if res:
-                            print(sy + " is a good trade ++++++++++++++++++++")
-                            send_to_telegram(f'{sy}')
+                            print("\n"+sy + " is a good trade ++++++++++++++++++++")
+                            # send_to_telegram(f'{sy}')
                         else:
                             print(f"skipping {sy}")
+                            # print(".",end="")
+
+                            pass
                         break
                     except Exception as e:
                         print(e)
@@ -168,7 +184,7 @@ def send_to_telegram(message):
 def main(tickers):
   
   
-  with concurrent.futures.ThreadPoolExecutor() as executor:
+  with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
     results = [executor.submit(ichi_strategy, sy) for sy in tickers]
   
   for f in concurrent.futures.as_completed(results):
@@ -178,8 +194,10 @@ if __name__ == '__main__':
     try:
         tickers = get_symbols()
         main(tickers)
-    except Exception as e:
-         print("error")
+    except KeyboardInterrupt as e:
+         print("ok .. ending")
+    except Exception as f:
+         print(f)
     
 
 
