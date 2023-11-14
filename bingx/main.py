@@ -33,8 +33,20 @@ def get_kline(symbol='IMX-USDT',timeframe='4h'):
     data['low'] = data.low.astype(float)
     # returns columns open, close, high, low, volume, and time
     return data
+def calculate_sma(data):
+     previous_sma = data['sma250'].iloc[-2]
+     current_sma = data['sma250'].iloc[-1]
+     previous_close = data['close'].iloc[-2]
+     current_close = data['close'].iloc[-1]
 
-
+     return (float(previous_sma) > float(previous_close)) and (float(current_sma) < float(current_close))
+def sma_strategy(sy):
+      kline = get_kline(sy,timeframe='30m')
+      sma = calculate_sma(kline)
+      if sma:
+        print(f"{sy} is a good trade ++++++++++++++++++++")
+      else:
+        print(f"skip {sy}")
 def get_symbols():
         try:
             url= "https://open-api.bingx.com/openApi/swap/v2/quote/ticker"
@@ -185,7 +197,7 @@ def main(tickers):
   
   
   with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-    results = [executor.submit(ichi_strategy, sy) for sy in tickers]
+    results = [executor.submit(sma_strategy, sy) for sy in tickers]
   
   for f in concurrent.futures.as_completed(results):
     f.result()
