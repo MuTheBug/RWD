@@ -17,7 +17,7 @@ def get_kline(symbol='IMX-USDT',timeframe='4h'):
     params={
         'symbol':f'{symbol}',
         'interval':timeframe,
-        'limit':500,
+        'limit':800,
         'start_time':nine_days_ago,
         'end_time':now_seconds,
     }
@@ -41,12 +41,14 @@ def calculate_sma(data):
 
      return (float(previous_sma) > float(previous_close)) and (float(current_sma) < float(current_close))
 def sma_strategy(sy):
-      kline = get_kline(sy,timeframe='15m')
-      sma = calculate_sma(kline)
-      if sma:
-        print(f"{sy} is a good trade ++++++++++++++++++++")
-      else:
-        print(f"skip {sy}")
+      timeFrames = ['15m','30m','1h','4h','6h','8h','1d']
+      for tf in timeFrames:
+        kline = get_kline(sy,timeframe=tf)
+        sma = calculate_sma(kline)
+        if sma:
+            print(f"{sy} is a good trade ++++++++++++++++++++ on {tf}")
+        else:
+            print(f"skip {sy} on {tf}")
 def get_symbols():
         try:
             url= "https://open-api.bingx.com/openApi/swap/v2/quote/ticker"
@@ -110,8 +112,15 @@ def ichi_strategy(sy):
                         break
 
                 
-            
-
+def ema_cross_strategy(sy):
+      timeFrames = ['1m','5m','15m','30m','1h','2h','4h','6h','8h','12h']
+      for tf in timeFrames:
+        kline = get_kline(sy,timeframe=tf)
+        sma = calculate_ema_cross(kline)
+        if sma:
+            print(f"{sy} is a good trade ++++++++++++++++++++ on {tf}")
+        else:
+            print(f"skip {sy} on {tf}")
 
 def calculate_ichi(data):
     conversion_line = (data['high'].rolling(9).max() + data['low'].rolling(9).min()) / 2
@@ -166,15 +175,21 @@ def calculate_ichi(data):
     data['ema9'] = ta.ema(close=data['close'],length=9)
     data['ema26'] = ta.ema(close=data['close'],length=26)
     return data
+
+
 def calculate_ema_cross(data):
-    data['ema9'] = ta.ema(close=data['close'],length=9)
-    data['ema26'] = ta.ema(close=data['close'],length=26)
-    before_9 = data['ema9'].iloc[-2]
-    now_9 = data['ema9'].iloc[-1]
-    before_26 = data['ema26'].iloc[-2]
-    now_26 = data['ema26'].iloc[-1]
-    res = (before_9 < before_26) and (now_9 > now_26)
-    return res
+    try:
+        data['ema9'] = ta.ema(close=data['close'],length=9)
+        data['ema26'] = ta.ema(close=data['close'],length=26)
+        before_9 = data['ema9'].iloc[-2]
+        before_26 = data['ema26'].iloc[-2]
+        now_26 = data['ema26'].iloc[-1]
+        now_9 = data['ema9'].iloc[-1]
+
+        res = (before_9 < before_26) and (now_9 > now_26)
+        return res
+    except Exception as e:
+        pass
 
 def send_to_telegram(message):
 
@@ -197,20 +212,23 @@ def main(tickers):
   
   
   with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-    results = [executor.submit(sma_strategy, sy) for sy in tickers]
+    results = [executor.submit(ema_cross_strategy, sy) for sy in tickers]
   
   for f in concurrent.futures.as_completed(results):
     f.result()
       
 if __name__ == '__main__':
-    try:
-        tickers = get_symbols()
-        main(tickers)
-    except KeyboardInterrupt as e:
-         print("ok .. ending")
-    except Exception as f:
-         print(f)
-    
+    while 1:
+        try:
+            tickers = get_symbols()
+            main(tickers)
+            print("sleeping a while... ")
+            time.sleep(10)
+        except KeyboardInterrupt as e:
+            print("ok .. ending")
+        except Exception as f:
+            print(f)
+        
 
 
 
