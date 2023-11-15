@@ -121,6 +121,22 @@ def ema_cross_strategy(sy):
             print(f"{sy} is a good trade ++++++++++++++++++++ on {tf}")
         else:
             print(f"skip {sy} on {tf}")
+            
+def spans_cross(sy):
+
+      timeFrames = ['1m','5m','15m','30m','1h','2h','4h','6h','8h','12h']
+      for tf in timeFrames:
+        kline = get_kline(sy,timeframe=tf)
+        sma = calculate_ichi(kline)
+        previous_conversion_line = sma['conversion_line'].iloc[-2]
+        current_conversion_line = sma['conversion_line'].iloc[-1]
+        previous_basis_line = sma['basis_line'].iloc[-2]
+        current_basis_line = sma['basis_line'].iloc[-1]
+        condition = (previous_conversion_line < previous_basis_line) and (current_conversion_line > current_basis_line)
+        if condition:
+            print(f"{sy} is a good trade ++++++++++++++++++++ on {tf}")
+        else:
+            print(f"skip {sy} on {tf}")
 
 def calculate_ichi(data):
     conversion_line = (data['high'].rolling(9).max() + data['low'].rolling(9).min()) / 2
@@ -221,7 +237,7 @@ def main(tickers):
   
   
   with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-    results = [executor.submit(ema_cross_strategy, sy) for sy in tickers]
+    results = [executor.submit(spans_cross, sy) for sy in tickers]
   
   for f in concurrent.futures.as_completed(results):
     f.result()
