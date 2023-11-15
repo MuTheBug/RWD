@@ -179,17 +179,26 @@ def calculate_ichi(data):
 
 def calculate_ema_cross(data):
     try:
+        try:
+            data['close'] = data['close'].astype(float) 
+        except ValueError:
+            pass # skip row
         data['ema9'] = ta.ema(close=data['close'],length=9)
         data['ema26'] = ta.ema(close=data['close'],length=26)
+        data['ema50'] = ta.ema(close=data['close'],length=50)
         before_9 = data['ema9'].iloc[-2]
         before_26 = data['ema26'].iloc[-2]
+        before_50 = data['ema50'].iloc[-2]
         now_26 = data['ema26'].iloc[-1]
         now_9 = data['ema9'].iloc[-1]
+        now_50 = data['ema50'].iloc[-1]
 
-        res = (before_9 < before_26) and (now_9 > now_26)
+        res = (before_9 < before_26) and (now_9 > now_26 >now_50)
+        # print(now_9,now_26)
+        # res = now_9 > now_26
         return res
     except Exception as e:
-        pass
+        print(e)
 
 def send_to_telegram(message):
 
