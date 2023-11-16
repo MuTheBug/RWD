@@ -41,7 +41,7 @@ def calculate_sma(data):
 
      return (float(previous_sma) > float(previous_close)) and (float(current_sma) < float(current_close))
 def sma_strategy(sy):
-      timeFrames = ['15m','30m','1h','4h','6h','8h','1d']
+      timeFrames = ['5m','10m','15m']
       for tf in timeFrames:
         kline = get_kline(sy,timeframe=tf)
         sma = calculate_sma(kline)
@@ -49,6 +49,8 @@ def sma_strategy(sy):
             print(f"{sy} is a good trade ++++++++++++++++++++ on {tf}")
         else:
             print(f"skip {sy} on {tf}")
+            # print('.')
+            pass
 def get_symbols():
         try:
             url= "https://open-api.bingx.com/openApi/swap/v2/quote/ticker"
@@ -59,7 +61,8 @@ def get_symbols():
         
         except Exception as e:
 
-            print(e)
+            # print(e)
+            pass
 
 
 
@@ -108,19 +111,26 @@ def ichi_strategy(sy):
                             pass
                         break
                     except Exception as e:
-                        print(e)
+                        # print(e)
                         break
 
                 
 def ema_cross_strategy(sy):
-      timeFrames = ['1m','5m','15m','30m','1h','2h','4h','6h','8h','12h']
+    try:
+      timeFrames = ['1m','5m','15m','4h','8h']
       for tf in timeFrames:
         kline = get_kline(sy,timeframe=tf)
         sma = calculate_ema_cross(kline)
         if sma:
             print(f"{sy} is a good trade ++++++++++++++++++++ on {tf}")
         else:
-            print(f"skip {sy} on {tf}")
+            # print(f"skip {sy} on {tf}")
+            # print('\'')
+            pass
+    except ConnectionError :
+        print("connection error")
+    except KeyboardInterrupt as e:
+        print(e)
             
 def spans_cross(sy):
 
@@ -137,6 +147,22 @@ def spans_cross(sy):
             print(f"{sy} is a good trade ++++++++++++++++++++ on {tf}")
         else:
             print(f"skip {sy} on {tf}")
+           
+def rsi(sy):
+
+      timeFrames = ['5m','3m','15m','1h','2h','4h']
+      for tf in timeFrames:
+        kline = get_kline(sy,timeframe=tf)
+        sma = calculate_ichi(kline)
+        previous_rsi= sma['rsi'].iloc[-2]
+        current_rsi = sma['rsi'].iloc[-1]
+
+        condition = (previous_rsi < 30) #and (current_rsi > 30)
+        if condition:
+            print(f"{sy} is a good trade ++++++++++++++++++++ on {tf}")
+        else:
+            # print(f"skip {sy} on {tf}")
+            pass
 
 def calculate_ichi(data):
     conversion_line = (data['high'].rolling(9).max() + data['low'].rolling(9).min()) / 2
@@ -190,6 +216,7 @@ def calculate_ichi(data):
     data['pullback_618'] = data['low'] <= (swing_high - level_618) # 618 level
     data['ema9'] = ta.ema(close=data['close'],length=9)
     data['ema26'] = ta.ema(close=data['close'],length=26)
+    data['rsi'] = ta.rsi(close=data['close'],length=14)
     return data
 
 
@@ -199,22 +226,19 @@ def calculate_ema_cross(data):
             data['close'] = data['close'].astype(float) 
         except ValueError:
             pass # skip row
-        data['ema9'] = ta.ema(close=data['close'],length=9)
-        data['ema26'] = ta.ema(close=data['close'],length=26)
         data['ema50'] = ta.ema(close=data['close'],length=50)
-        before_9 = data['ema9'].iloc[-2]
-        before_26 = data['ema26'].iloc[-2]
+        data['ema200'] = ta.ema(close=data['close'],length=200)
         before_50 = data['ema50'].iloc[-2]
-        now_26 = data['ema26'].iloc[-1]
-        now_9 = data['ema9'].iloc[-1]
+        before_260 = data['ema200'].iloc[-2]
+        now_200 = data['ema200'].iloc[-1]
         now_50 = data['ema50'].iloc[-1]
 
-        res = (before_9 < before_26) and (now_9 > now_26 >now_50)
-        # print(now_9,now_26)
+        res = (before_50 < before_260) and (now_50 > now_200)
         # res = now_9 > now_26
         return res
     except Exception as e:
-        print(e)
+        # print(e)
+        pass
 
 def send_to_telegram(message):
 
@@ -237,7 +261,7 @@ def main(tickers):
   
   
   with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-    results = [executor.submit(spans_cross, sy) for sy in tickers]
+    results = [executor.submit(ema_cross_strategy, sy) for sy in tickers]
   
   for f in concurrent.futures.as_completed(results):
     f.result()
@@ -252,7 +276,8 @@ if __name__ == '__main__':
         except KeyboardInterrupt as e:
             print("ok .. ending")
         except Exception as f:
-            print(f)
+            # print(f)
+            pass
         
 
 
