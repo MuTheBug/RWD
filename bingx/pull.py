@@ -60,7 +60,7 @@ def foolproof_strategy(sy):
         data['sma50'] = ta.sma(data['close'],length=50)
         data['sma20'] = ta.sma(data['close'],length=20)
         data['rsi'] = ta.rsi(data['close'],length=14)
-        long = data['sma200'].iloc[-1]<data['sma50'].iloc[-1]<data['close'].iloc[-1] and data['rsi'].iloc[-1] <=35
+        long = data['sma200'].iloc[-1]<data['sma50'].iloc[-1]<data['close'].iloc[-1] and data['rsi'].iloc[-1] <=40
         if long:
             send_to_telegram(f'long +++++++++++++++++ {sy} on {tf}')
         else:
