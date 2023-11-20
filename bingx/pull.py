@@ -34,8 +34,20 @@ def get_kline(symbol='IMX-USDT',timeframe='4h'):
     # returns columns open, close, high, low, volume, and time
     return data
 
+def send_to_telegram(message):
+
+    apiToken = API_TOKEN
+    chatID = CHAT_ID
+    apiURL = f'https://api.telegram.org/bot{apiToken}/sendMessage'
+    message = str(message)
+
+    try:
+        response = requests.post(
+            apiURL, json={'chat_id': chatID, 'text': message, 'parse_mode': 'html'})
+    except Exception as e:
+        print(e)
 def foolproof_strategy(sy):
-    timeframes = ['15m','1h','2h','4h','8h','1d']
+    timeframes = ['1m','3m','5m','15m','1h','2h','4h','8h','1d']
     
     for tf in timeframes:
         data= get_kline(sy,timeframe=tf)
@@ -48,9 +60,9 @@ def foolproof_strategy(sy):
         data['sma50'] = ta.sma(data['close'],length=50)
         data['sma20'] = ta.sma(data['close'],length=20)
         data['rsi'] = ta.rsi(data['close'],length=14)
-        long = data['sma200'].iloc[-1]<data['sma50'].iloc[-1]<data['close'].iloc[-1] and data['rsi'].iloc[-1] <=30
+        long = data['sma200'].iloc[-1]<data['sma50'].iloc[-1]<data['close'].iloc[-1] and data['rsi'].iloc[-1] <=35
         if long:
-            print(f'long +++++++++++++++++ {sy} on {tf}')
+            send_to_telegram(f'long +++++++++++++++++ {sy} on {tf}')
         else:
             print(f'skip {sy} on {tf}')
 
