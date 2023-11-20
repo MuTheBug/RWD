@@ -38,7 +38,7 @@ def foolproof_strategy(sy):
     timeframes = ['15m','1h','2h','4h','8h','1d']
     
     for tf in timeframes:
-        data= get_kline(data,timeframe=tf)
+        data= get_kline(sy,timeframe=tf)
         try:
             data['close'] = data['close'].astype(float) 
         except ValueError:
@@ -49,13 +49,10 @@ def foolproof_strategy(sy):
         data['sma20'] = ta.sma(data['close'],length=20)
         data['rsi'] = ta.rsi(data['close'],length=14)
         long = data['sma200'].iloc[-1]<data['sma50'].iloc[-1]<data['close'].iloc[-1] and data['rsi'].iloc[-1] <=30
-        short = data['sma200'].iloc[-1]<data['sma50'].iloc[-1]<data['close'].iloc[-1] and data['rsi'].iloc[-1] <=70
         if long:
             print(f'long +++++++++++++++++ {sy} on {tf}')
-        elif short:
-            print(f'short ----------------- {sy} on {tf}')
         else:
-            print('skip {sy} on {tf}')
+            print(f'skip {sy} on {tf}')
 
             
 
