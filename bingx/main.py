@@ -36,6 +36,7 @@ def get_kline(symbol='IMX-USDT',timeframe='4h'):
 def calculate_sma(data):
      previous_sma = data['sma250'].iloc[-2]
      current_sma = data['sma250'].iloc[-1]
+     current_sma = data['sma200'].iloc[-1]
      previous_close = data['close'].iloc[-2]
      current_close = data['close'].iloc[-1]
 
@@ -103,7 +104,7 @@ def ichi_strategy(sy):
                         res = all([first_res,second_res,third_res,fourth_res])
                         if res:
                             print("\n"+sy + " is a good trade ++++++++++++++++++++")
-                            # send_to_telegram(f'{sy}')
+                            send_to_telegram(f'{sy}')
                         else:
                             print(f"skipping {sy}")
                             # print(".",end="")
@@ -261,7 +262,7 @@ def main(tickers):
   
   
   with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-    results = [executor.submit(ema_cross_strategy, sy) for sy in tickers]
+    results = [executor.submit(ichi_strategy, sy) for sy in tickers]
   
   for f in concurrent.futures.as_completed(results):
     f.result()

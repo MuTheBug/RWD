@@ -7,7 +7,7 @@ import pandas as pd
 from sklearn.linear_model import LinearRegression
 
 
-def get_kline(symbol="AVAX-USDT", timeframe="1h"):
+def get_kline(symbol="YFI-USDT", timeframe="15m"):
     now = datetime.now()
     now_seconds = int(now.timestamp() * 1000)
     nine_days = 350 * 24 * 60 * 60 * 1000
