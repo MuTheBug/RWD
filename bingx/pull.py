@@ -2,53 +2,12 @@ from apis import *
 import pandas as pd
 from datetime import datetime
 import pandas_ta as ta
-import concurrent.futures
 import requests
-import time
 
-def get_kline(symbol='IMX-USDT',timeframe='4h'):
-    
-    now = datetime.now()
-    now_seconds = int(now.timestamp()*1000) 
-    nine_days = 350 * 24 * 60 * 60 *1000
-    nine_days_ago = now_seconds - nine_days
-    future= "/openApi/swap/v3/quote/klines"
-    url= "https://open-api.bingx.com"+future
-    params={
-        'symbol':f'{symbol}',
-        'interval':timeframe,
-        'limit':800,
-        'start_time':nine_days_ago,
-        'end_time':now_seconds,
-    }
-    data = requests.get(url=url,params=params)
 
-    # print(data.url)
-    data=data.json()['data'][::-1]
-    
-    data = pd.DataFrame(data)
-    data['time'] =pd.to_datetime(data['time'],unit='ms')
-    data['sma250'] = ta.sma(data['close'],length=250)
-    data['high'] = data.high.astype(float)
-    data['low'] = data.low.astype(float)
-    # returns columns open, close, high, low, volume, and time
-    return data
-
-def send_to_telegram(message):
-
-    apiToken = API_TOKEN
-    chatID = CHAT_ID
-    apiURL = f'https://api.telegram.org/bot{apiToken}/sendMessage'
-    message = str(message)
-
-    try:
-        response = requests.post(
-            apiURL, json={'chat_id': chatID, 'text': message, 'parse_mode': 'html'})
-    except Exception as e:
-        print(e)
 def foolproof_strategy(sy):
     timeframes = ['1m','3m','5m','15m','1h','2h','4h','8h','1d']
-    
+    # timeframes = ['1h']
     for tf in timeframes:
         data= get_kline(sy,timeframe=tf)
         try:
@@ -59,53 +18,22 @@ def foolproof_strategy(sy):
         data['sma200'] = ta.sma(data['close'],length=200)
         data['sma50'] = ta.sma(data['close'],length=50)
         data['sma20'] = ta.sma(data['close'],length=20)
+        data['sma10'] = ta.sma(data['close'],length=10)
+        data['sma5'] = ta.sma(data['close'],length=5)
+        data['sma'] = (data['sma200'] < data['sma50']) & (data['sma50'] < data['sma20']) & (data['sma20'] < data['sma10']) & (data['sma10'] < data['sma5'])
         data['rsi'] = ta.rsi(data['close'],length=14)
-        long = data['sma200'].iloc[-1]<data['sma50'].iloc[-1]<data['close'].iloc[-1] and data['rsi'].iloc[-1] <=40
+        macd = ta.macd(close=data['close'])
+        pre_histogram = macd['MACDh_12_26_9'].iloc[-2]
+        current_histogram = macd['MACDh_12_26_9'].iloc[-1]
+        histogram_signal = pre_histogram <=0 and current_histogram >=0
+        long = data['sma200'].iloc[-1]<data['sma50'].iloc[-1]<data['close'].iloc[-1] and data['close'].iloc[-1] <=data['sma20'].iloc[-1]
+        long = data['sma200'].iloc[-1]<data['close'].iloc[-1] and data['rsi'].iloc[-1] <=30
+        long = data['sma'].iloc[-1]
         if long:
-            send_to_telegram(f'long +++++++++++++++++ {sy} on {tf}')
+            send_to_telegram(f'{sy} on {tf} rsi')
         else:
             print(f'skip {sy} on {tf}')
 
             
 
-def get_symbols():
-        try:
-            url= "https://open-api.bingx.com/openApi/swap/v2/quote/ticker"
-
-            tickers = requests.get(url=url).json()['data']
-            data = pd.DataFrame(tickers)['symbol']
-            return data.to_list()
-        
-        except Exception as e:
-
-            print("error in getting symbols")
-            pass
-
-
-
     
-
-
-def main(tickers):
-  
-  
-  with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-    results = [executor.submit(foolproof_strategy, sy) for sy in tickers]
-  
-  for f in concurrent.futures.as_completed(results):
-    f.result()
-      
-if __name__ == '__main__':
-    while 1:
-        try:
-            tickers = get_symbols()
-            main(tickers)
-            print(tickers)
-            print("sleeping a while... ")
-            time.sleep(10)
-        except KeyboardInterrupt as e:
-            print("ok .. ending")
-        except Exception as f:
-            print(f)
-            pass
-        
