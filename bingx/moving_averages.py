@@ -28,7 +28,7 @@ def moving_averages(symbol):
     
 
     # print(arr)
-THRESH_PERCENT = 5 # Threshold percentage 
+THRESH_PERCENT = 15 # Threshold percentage 
 
 def find_zigzag(symbol):
     arr = get_kline(symbol)['close'].tolist()
@@ -71,3 +71,8 @@ def find_zigzag(symbol):
 tickers = get_sympols.get_symbols()
 
 loop.call_me(tickers=tickers, name_of_method=find_zigzag)
+
+
+# get_kline() returns a pd series with columns open, close, high, low, volume, and time
+# I want a python code that calculate the renko briks and print("good asset") if a new renko brick with
+# different color is formed, otherwise it should print("skip")
