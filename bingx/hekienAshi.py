@@ -22,7 +22,7 @@ def check_signal(symbol):
         rsi = asset_df['RSI'].iloc[-1]
         prev_rsi = asset_df['RSI'].iloc[-2]
         
-        condition= ha_close_5<ha_close_4 < ha_close_3< ha_close_2 < ha_close_1 and (ha_close < ha_close_1)
+        condition= ha_close_6<ha_close_5<ha_close_4 < ha_close_3< ha_close_2 < ha_close_1 and (ha_close < ha_close_1)
         if condition:
             print(f'{symbol} +++++++++++++++++++++ on {tf}')
         else:
