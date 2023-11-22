@@ -28,6 +28,8 @@ def check_signal(symbol):
         if condition_long or condition_short:
             print(f'{symbol} +++++++++++++++++++++ on {tf}')
         else:
+            if(rsi>=80):
+                print(f"WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW {symbol}")
             # print(f'skip {symbol} rsi {rsi}')
             pass
 # check_signal('BTC-USDT')
