@@ -6,7 +6,7 @@ import get_sympols
 
 def find_ascend(symbol):
     arr = get_kline(symbol,timeframe='15m')['close'].tolist()
-    arr = arr[-10:-1]
+    arr = arr[-7:-1]
     first_number = arr[0]
     last_number = arr[-1]
     msg = f"Go "
@@ -17,11 +17,12 @@ def find_ascend(symbol):
     else:        
         percent = (last_number- first_number) / ((first_number + last_number) /2) * 100
         msg+=f"short on {symbol}"
-    if percent > 5:
+    if percent > 3:
         print(msg + f" XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX with {percent}")
-        send_to_telegram.send_to_telegram(msg)
+        # send_to_telegram.send_to_telegram(msg)
     else:
-        print(f'skip {symbol} of percent {percent}')
+        # print(f'skip {symbol}:{percent}')
+        pass
 
         
 

@@ -1,4 +1,5 @@
 from datetime import datetime
+import numpy as np
 import pandas as pd
 import requests
 
@@ -33,5 +34,16 @@ def get_kline(symbol='IMX-USDT',timeframe='4h'):
         print('error in parsing')
         pass # skip row
     data['time'] =pd.to_datetime(data['time'],unit='ms')
+    
+    data['HA_Close'] = (data['open'] + data['high'] + data['low'] + data['close']) / 4
 
+    ha_open = [ (data.iloc[0]['open'] + data.iloc[0]['close'])/2 ]
+    for i in range(1, len(data.index)):
+        ha_open.append((ha_open[i-1] + data.iloc[i]['HA_Close'])/2)
+    data['HA_Open'] = np.array(ha_open)
+
+    data['HA_High'] = data[['HA_Open','HA_Close','high']].max(axis=1)
+    data['HA_Low'] = data[['HA_Open','HA_Close','low']].min(axis=1)
+    
     return data
+
