@@ -1,8 +1,7 @@
 from datetime import datetime
-import numpy as np
 import pandas as pd
 import requests
-
+import numpy as np
 
 def get_kline(symbol='IMX-USDT',timeframe='4h'):
     
@@ -15,7 +14,7 @@ def get_kline(symbol='IMX-USDT',timeframe='4h'):
     params={
         'symbol':f'{symbol}',
         'interval':timeframe,
-        'limit':300,
+        'limit':900,
         'start_time':nine_days_ago,
         'end_time':now_seconds,
     }
@@ -29,7 +28,9 @@ def get_kline(symbol='IMX-USDT',timeframe='4h'):
         data['close'] = data['close'].astype(float)
         data['high'] = data.high.astype(float)
         data['low'] = data.low.astype(float)
-        data['open'] = data.low.astype(float)
+        data['open'] = data.open.astype(float)
+        data['volume'] = data.volume.astype(float)
+        
     except ValueError:
         print('error in parsing')
         pass # skip row
