@@ -30,10 +30,10 @@ def psar_stoch_strategy(df):
         psar = ta.psar(high=df['high'],low=df['low'],close=df['close'])
         stoch['psr'] = psar['PSARs_0.02_0.2']
         stoch['close']= df['close']
-        stoch['signal'] = np.where(stoch['STOCHd_14_3_3'] > 70) and (stoch['psr'] > stoch['close'])
+        stoch['signal'] = np.where(stoch['STOCHd_14_3_3'] < 70) and (stoch['psr'] > stoch['close'])
         # print(psar)
         # print(stoch.tail(20))
-        return stoch['signal'].iloc[-1] and not stoch['signal'].iloc[-2]
+        return (stoch['STOCHd_14_3_3'].iloc[-1] < 70 and stoch['psr'].iloc[-1] > stoch['close'].iloc[-1]) and (stoch['psr'].iloc[-2] < stoch['close'].iloc[-2])
     
         
 def macd_stoch_strategy(df):
