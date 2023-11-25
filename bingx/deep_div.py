@@ -21,6 +21,10 @@ def sma26(data):
     
     data['sma26'] = ta.sma(close=data['close'],length=26)
     return data
+def sma100(data):
+    
+    data['sma100'] = ta.sma(close=data['close'],length=100)
+    return data
 def macd(data):
     macd = ta.macd(close=data['close'],fast=26,slow=50)
     return macd
@@ -45,33 +49,45 @@ def keltner(data):
     data['middle_channel'] = middle_channel
     data['third_kc'] = ((data['middle_channel'] - data['lower_channel']) / 2) + data['lower_channel']
     return data
+def stoch(data):
+    stoch = ta.stoch(high=data['high'],low=data['low'],close=data['close'])
+    data['STOCHd_14_3_3'] = stoch['STOCHd_14_3_3']
+    data['STOCHk_14_3_3'] = stoch['STOCHk_14_3_3']
+    return data
+def p_sar(data):
+    psar = ta.psar(high=data['high'],low=data['low'],close=data['close'])
+    data['psar'] = psar['PSARl_0.02_0.2']
+    return data
 def prixxxxxnt(df,sy,tf):
     counter = 0
     df = df.to_dict()
     for key, val in df.items():
         if val[899]:
             counter +=1
-    if counter >= 3:
-        print(f"{sy} has {counter} indicators as true on {tf}")
-        for key, val in df.items():
-            if val[899]:
-                print(f"{counter} : {key}")
-        print("XXXXXXXXXXXXXXXXXXXXXXXXXX")
-        print("XXXXXXXXXXXXXXXXXXXXXXXXXX")
-        print("XXXXXXXXXXXXXXXXXXXXXXXXXX")
-        print("XXXXXXXXXXXXXXXXXXXXXXXXXX")
-            
+            print(f"{sy} has {key} indicators as true on {tf}")
+            print("XXXXXXXXXXXXXXXXXXXXXXXXXX")
+            print("XXXXXXXXXXXXXXXXXXXXXXXXXX")
+            print("XXXXXXXXXXXXXXXXXXXXXXXXXX")
+            print("XXXXXXXXXXXXXXXXXXXXXXXXXX")
+            return True
+    print(f"skip {sy} on {tf}")
+    return False
+    
     # print(df)
 def deep_dip_strategy(sy):
     
-    timeframes = ['1h','2h','4h']
+    timeframes = ['1m','3m','5m','15m','1h','2h','4h']
     for tf in timeframes:
         df = get_kline(sy,tf)
+
+
         df = sma250(df)
         df = sma200(df)
         df = sma20(df)
         df = sma26(df)
         df = sma9(df)
+        df = stoch(df)
+        df = p_sar(df)
         df['atr'] = ta.atr(close=df['close'],high=df['high'],low=df['low'],length=14) 
 
         df = rsi(df)
@@ -88,15 +104,31 @@ def deep_dip_strategy(sy):
         df['price_under_sma20'] = df['sma20']>df['close']
         df['atr_tp'] = df['atr_tp'] = df['close'] + (df['atr'] * 1.5)
         df['macd_signal'] = np.where((mac['MACDh_26_50_9'].iloc[-2] > 0 and mac['MACDh_26_50_9'].iloc[-3] <= 0), True, False)
+        df['macd_signal_short'] = np.where((mac['MACDh_26_50_9'].iloc[-2] < 0 and mac['MACDh_26_50_9'].iloc[-3] >= 0), True, False)
+        
         df['kc_signal'] = df['close'] <= df['third_kc']
         df['ha_signal'] = np.where(df['HA_Close'].iloc[-2] > df['HA_Close'].iloc[-3] and df['HA_Close'].iloc[-4] > df['HA_Close'].iloc[-2],True,False)
-        selected_columns = df[['sma250_signal','vol_signal','rsi_oversold','price_under_sma20','macd_signal','kc_signal','rsi_over_50','sma200_signal','ha_signal']]
+
+        psar_stoch_strategy=(df['psar'].iloc[-2]> df['close'].iloc[-2])and (df['STOCHd_14_3_3'].iloc[-2]>70 and df['STOCHk_14_3_3'].iloc[-2]>70)
+        ma_stoch_strategy=(df['STOCHd_14_3_3'].iloc[-2] > 70 and df['STOCHk_14_3_3'].iloc[-2] > 70) and  (df['close'].iloc[-2] < df['sma100'].iloc[-2])
+
+        macd_rsi_strategy_long= df['macd_signal'].iloc[-2] and df['rsi_oversold'].iloc[-2]
+            
+        macd_rsi_strategy_short=df['macd_signal_short'].iloc[-2] and df['rsi_overbought'].iloc[-2]
+   
         
-        selected_columns = selected_columns.tail(1)
-        prixxxxxnt(selected_columns,sy,tf)
+        selected_columns = [psar_stoch_strategy,ma_stoch_strategy,macd_rsi_strategy_long,macd_rsi_strategy_short]
+        if any(selected_columns):
+            print(selected_columns)
+            send_to_telegram(f"{sy} on {tf}")
+        else:
+            print(f"skip {sy} on {tf}")
+        # prixxxxxnt(selected_columns,sy,tf)
+        # print(selected_columns)
   
   
-# deep_dip_strategy('BTC-USDT')      
+# deep_dip_strategy('BTC-USDT')   
+   
 tickers = get_sympols.get_symbols()
 
 loop.call_me(tickers=tickers, name_of_method=deep_dip_strategy)

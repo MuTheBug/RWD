@@ -45,6 +45,6 @@ def get_kline(symbol='IMX-USDT',timeframe='4h'):
 
     data['HA_High'] = data[['HA_Open','HA_Close','high']].max(axis=1)
     data['HA_Low'] = data[['HA_Open','HA_Close','low']].min(axis=1)
-    
+    # data.to_csv('file.csv')
     return data
 
