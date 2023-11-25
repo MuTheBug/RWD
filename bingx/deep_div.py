@@ -56,7 +56,7 @@ def stoch(data):
     return data
 def p_sar(data):
     psar = ta.psar(high=data['high'],low=data['low'],close=data['close'])
-    data['psar'] = psar['PSARl_0.02_0.2']
+    data['psar'] = psar['PSARs_0.02_0.2']
     return data
 def prixxxxxnt(df,sy,tf):
     counter = 0
@@ -118,11 +118,11 @@ def deep_dip_strategy(sy):
    
         
         selected_columns = [psar_stoch_strategy,ma_stoch_strategy,macd_rsi_strategy_long,macd_rsi_strategy_short]
-        if any(selected_columns):
-            print(selected_columns)
-            send_to_telegram(f"{sy} on {tf}")
-        else:
-            print(f"skip {sy} on {tf}")
+
+        print(f'{sy}:  {selected_columns}  on {tf}')
+            # send_to_telegram(f"{sy} on {tf}")
+        
+        # print(f"skip {sy} on {tf}")
         # prixxxxxnt(selected_columns,sy,tf)
         # print(selected_columns)
   
