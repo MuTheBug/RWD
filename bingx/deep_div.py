@@ -93,28 +93,28 @@ def deep_dip_strategy(sy):
         df = rsi(df)
         mac = macd(df)
         kc = keltner(df)
-        df['vol_signal'] = np.where((df['volume'].iloc[-2] > df['volume'].iloc[-3]> df['volume'].iloc[-4]), True, False)
-        df['sma200_signal'] = np.where((df['sma200'].iloc[-3]>df['close'].iloc[-3] and df['sma200'].iloc[-2]<df['close'].iloc[-2] ),True,False)
-        df['sma250_signal'] = np.where((df['sma250'].iloc[-3]>df['close'].iloc[-3] and df['sma250'].iloc[-2]<df['close'].iloc[-2] ),True,False)
-        df['sma_cross_signal'] = np.where((df['sma9'].iloc[-3]<df['sma26'].iloc[-3] and df['sma9'].iloc[-2]>df['sma26'].iloc[-2] ),True,False)
-        df['rsi_signal'] = np.where((df['rsi'].iloc[-3]<=30 and df['rsi'].iloc[-2]>70 ),True,False)
+        df['vol_signal'] = np.where((df['volume'].iloc[-1] > df['volume'].iloc[-2]> df['volume'].iloc[-3]), True, False)
+        df['sma200_signal'] = np.where((df['sma200'].iloc[-2]>df['close'].iloc[-2] and df['sma200'].iloc[-1]<df['close'].iloc[-1] ),True,False)
+        df['sma250_signal'] = np.where((df['sma250'].iloc[-2]>df['close'].iloc[-2] and df['sma250'].iloc[-1]<df['close'].iloc[-1] ),True,False)
+        df['sma_cross_signal'] = np.where((df['sma9'].iloc[-1]<df['sma26'].iloc[-1] and df['sma9'].iloc[-2]>df['sma26'].iloc[-2] ),True,False)
+        df['rsi_signal'] = np.where((df['rsi'].iloc[-2]<=30 and df['rsi'].iloc[-1]>70 ),True,False)
         df['rsi_oversold'] = np.where((df['rsi'].iloc[-2]<=30),True,False)
-        df['rsi_over_50'] = np.where((df['rsi'].iloc[-2]<=50),True,False)
-        df['rsi_overbought'] = np.where((df['rsi'].iloc[-2]>70),True,False)
+        df['rsi_over_50'] = np.where((df['rsi'].iloc[-1]<=50),True,False)
+        df['rsi_overbought'] = np.where((df['rsi'].iloc[-1]>70),True,False)
         df['price_under_sma20'] = df['sma20']>df['close']
         df['atr_tp'] = df['atr_tp'] = df['close'] + (df['atr'] * 1.5)
-        df['macd_signal'] = np.where((mac['MACDh_26_50_9'].iloc[-2] > 0 and mac['MACDh_26_50_9'].iloc[-3] <= 0), True, False)
-        df['macd_signal_short'] = np.where((mac['MACDh_26_50_9'].iloc[-2] < 0 and mac['MACDh_26_50_9'].iloc[-3] >= 0), True, False)
+        df['macd_signal'] = np.where((mac['MACDh_26_50_9'].iloc[-1] > 0 and mac['MACDh_26_50_9'].iloc[-2] <= 0), True, False)
+        df['macd_signal_short'] = np.where((mac['MACDh_26_50_9'].iloc[-1] < 0 and mac['MACDh_26_50_9'].iloc[-2] >= 0), True, False)
         
         df['kc_signal'] = df['close'] <= df['third_kc']
         df['ha_signal'] = np.where(df['HA_Close'].iloc[-2] > df['HA_Close'].iloc[-3] and df['HA_Close'].iloc[-4] > df['HA_Close'].iloc[-2],True,False)
 
-        psar_stoch_strategy=(df['psar'].iloc[-2]> df['close'].iloc[-2])and (df['STOCHd_14_3_3'].iloc[-2]>70 and df['STOCHk_14_3_3'].iloc[-2]>70)
-        ma_stoch_strategy=(df['STOCHd_14_3_3'].iloc[-2] > 70 and df['STOCHk_14_3_3'].iloc[-2] > 70) and  (df['close'].iloc[-2] < df['sma100'].iloc[-2])
+        psar_stoch_strategy=(df['psar'].iloc[-2]> df['close'].iloc[-2])and (df['STOCHd_14_3_3'].iloc[-2]>70)
+        ma_stoch_strategy=(df['STOCHd_14_3_3'].iloc[-1] > 70 ) and  (df['close'].iloc[-1] < df['sma100'].iloc[-1])
 
-        macd_rsi_strategy_long= df['macd_signal'].iloc[-2] and df['rsi_oversold'].iloc[-2]
+        macd_rsi_strategy_long= df['macd_signal'].iloc[-1] and df['rsi_oversold'].iloc[-1]
             
-        macd_rsi_strategy_short=df['macd_signal_short'].iloc[-2] and df['rsi_overbought'].iloc[-2]
+        macd_rsi_strategy_short=df['macd_signal_short'].iloc[-1] and df['rsi_overbought'].iloc[-1]
    
         
         selected_columns = [psar_stoch_strategy,ma_stoch_strategy,macd_rsi_strategy_long,macd_rsi_strategy_short]
