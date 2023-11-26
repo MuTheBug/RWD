@@ -33,9 +33,14 @@ def deep_dip_strategy(sy):
             print("XXXXXXXXXXXXXXXXXXXXXXXXXX")
             print("XXXXXXXXXXXXXXXXXXXXXXXXXX")
 
-        if inside:
+        if inside==1:
             print(f"{sy} got a inside bullish bar on timeframe : {tf}")
             print("XXXXXXXXXXXXXXXXXXXXXXXXXX")
+            print("XXXXXXXXXXXXXXXXXXXXXXXXXX")
+            print("XXXXXXXXXXXXXXXXXXXXXXXXXX")
+            print("XXXXXXXXXXXXXXXXXXXXXXXXXX")
+        if inside==2:
+            print(f"{sy} got a inside Bearish bar on timeframe : {tf}")
             print("XXXXXXXXXXXXXXXXXXXXXXXXXX")
             print("XXXXXXXXXXXXXXXXXXXXXXXXXX")
             print("XXXXXXXXXXXXXXXXXXXXXXXXXX")
@@ -81,17 +86,25 @@ def macd_rsi_strategy_long(df):
     
     
 def inside_bar_bullish(df):
-    previous_close = df['close'].iloc[-3]
-    previous_open = df['open'].iloc[-3]
-    previous_low = df['low'].iloc[-3]
-    previous_high = df['high'].iloc[-3]
-    current_close = df['close'].iloc[-2]
-    current_open = df['open'].iloc[-2]
-    current_low = df['low'].iloc[-2]
-    current_high = df['high'].iloc[-2]
-    shadows = (current_high < previous_high) and (current_low < previous_low)
-    bodies = (previous_close < previous_open) and (current_open < current_close)  
-    return shadows and bodies
+    previous_high = df['high'].iloc[-4]  
+    previous_low = df['low'].iloc[-4]
+
+    current_high = df['high'].iloc[-3]
+    current_low = df['low'].iloc[-3]  
+
+    is_inside = (current_high < previous_high) & (current_low > previous_low)  
+
+    # Identify breakouts
+    if is_inside:
+        upside_breakout = df['high'].iloc[-2] > current_high
+        downside_breakout = df['low'].iloc[-2] < current_low
+        
+        if upside_breakout:
+            return 1
+            
+        if downside_breakout: 
+            return 2
+    return 0
     
 # deep_dip_strategy('BTC-USDT')
    
