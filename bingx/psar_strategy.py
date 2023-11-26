@@ -4,14 +4,14 @@ from get_klines import np
 
 def deep_dip_strategy(sy):
     
-    timeframes = ['1m','3m','5m','15m','1h','2h','4h']
-    timeframes = ['1h']
+    timeframes = ['15m','1h','2h','4h']
+    # timeframes = ['1h']
     for tf in timeframes:
         df = get_kline(sy,tf)
         # df = pd.read_csv('xxx.csv')
         # df = pd.DataFrame(df)
-        macd_short = macd_stoch_strategy_short(df)
-        macd_long = macd_stoch_strategy_long(df)
+        macd_short = macd_rsi_strategy_short(df)
+        macd_long = macd_rsi_strategy_long(df)
         psar = psar_stoch_strategy(df)
         if macd_short:
             print(f"{sy} got a MACD Bearish on timeframe : {tf}")
@@ -51,26 +51,24 @@ def psar_stoch_strategy(df):
         # return (stoch['STOCHd_14_3_3'].iloc[-1] < 70 and stoch['psr'].iloc[-1] > stoch['close'].iloc[-1]) and (stoch['psr'].iloc[-2] < stoch['close'].iloc[-2])
     
         
-def macd_stoch_strategy_short(df):
-        stoch = ta.stoch(high=df['high'],low=df['low'],close=df['close'])
+def macd_rsi_strategy_short(df):
+        df['rsi'] = ta.rsi(df['close'],length=14)
         macd = ta.macd(close=df['close'])
-        stoch['MACD'] = macd['MACDh_12_26_9']
-        stoch['close']= df['close']
-        macd_beaish = stoch['MACD'].iloc[-1] < 0 and stoch['MACD'].iloc[-2] > 0
-
-        return stoch['STOCHd_14_3_3'].iloc[-1] >70 and macd_beaish
+        df['MACD'] = macd['MACDh_12_26_9']
+        df['close']= df['close']
+        macd_beaish = df['MACD'].iloc[-1] < 0 and df['MACD'].iloc[-2] > 0
+        rsi_bearish = df['rsi'].iloc[-1] < 70 or df['rsi'].iloc[-2] < 70 or df['rsi'].iloc[-3] < 70 
+        return macd_beaish and rsi_bearish
     
         
-def macd_stoch_strategy_long(df):
-        stoch = ta.stoch(high=df['high'],low=df['low'],close=df['close'])
+def macd_rsi_strategy_long(df):
+        df['rsi'] = ta.rsi(df['close'],length=14)
         macd = ta.macd(close=df['close'])
-        stoch['MACD'] = macd['MACDh_12_26_9']
-        stoch['close']= df['close']
-        macd_beaish = stoch['MACD'].iloc[-1] > 0 and stoch['MACD'].iloc[-2] < 0
-
-        return stoch['STOCHd_14_3_3'].iloc[-1] <33 and macd_beaish
-    
-
+        df['MACD'] = macd['MACDh_12_26_9']
+        df['close']= df['close']
+        macd_beaish = df['MACD'].iloc[-1] > 0 and df['MACD'].iloc[-2] < 0
+        rsi_bearish = df['rsi'].iloc[-1] < 30 or df['rsi'].iloc[-2] < 30 or df['rsi'].iloc[-3] < 30 
+        return macd_beaish and rsi_bearish
 # deep_dip_strategy('BTC-USDT')
    
 tickers = get_sympols.get_symbols()
