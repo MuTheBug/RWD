@@ -10,9 +10,10 @@ def deep_dip_strategy(sy):
         df = get_kline(sy,tf)
         # df = pd.read_csv('xxx.csv')
         # df = pd.DataFrame(df)
-        macd_short = macd_rsi_strategy_short(df)
+        macd_short = False#macd_rsi_strategy_short(df)
         macd_long = macd_rsi_strategy_long(df)
         psar = psar_stoch_strategy(df)
+        inside = inside_bar_bullish(df)
         if macd_short:
             print(f"{sy} got a MACD Bearish on timeframe : {tf}")
             print("XXXXXXXXXXXXXXXXXXXXXXXXXX")
@@ -27,6 +28,13 @@ def deep_dip_strategy(sy):
             print("XXXXXXXXXXXXXXXXXXXXXXXXXX")
         if psar:
             print(f"{sy} got a Parbolic Sar Bearish on timeframe : {tf}")
+            print("XXXXXXXXXXXXXXXXXXXXXXXXXX")
+            print("XXXXXXXXXXXXXXXXXXXXXXXXXX")
+            print("XXXXXXXXXXXXXXXXXXXXXXXXXX")
+            print("XXXXXXXXXXXXXXXXXXXXXXXXXX")
+
+        if inside:
+            print(f"{sy} got a inside bullish bar on timeframe : {tf}")
             print("XXXXXXXXXXXXXXXXXXXXXXXXXX")
             print("XXXXXXXXXXXXXXXXXXXXXXXXXX")
             print("XXXXXXXXXXXXXXXXXXXXXXXXXX")
@@ -67,8 +75,24 @@ def macd_rsi_strategy_long(df):
         df['MACD'] = macd['MACDh_12_26_9']
         df['close']= df['close']
         macd_beaish = df['MACD'].iloc[-1] > 0 and df['MACD'].iloc[-2] < 0
-        rsi_bearish = df['rsi'].iloc[-1] < 30 or df['rsi'].iloc[-2] < 30 or df['rsi'].iloc[-3] < 30 
+        rsi_bearish = df['rsi'].iloc[-1] < 35 or df['rsi'].iloc[-2] < 35 or df['rsi'].iloc[-3] < 30 
         return macd_beaish and rsi_bearish
+    
+    
+    
+def inside_bar_bullish(df):
+    previous_close = df['close'].iloc[-3]
+    previous_open = df['open'].iloc[-3]
+    previous_low = df['low'].iloc[-3]
+    previous_high = df['high'].iloc[-3]
+    current_close = df['close'].iloc[-2]
+    current_open = df['open'].iloc[-2]
+    current_low = df['low'].iloc[-2]
+    current_high = df['high'].iloc[-2]
+    shadows = (current_high < previous_high) and (current_low < previous_low)
+    bodies = (previous_close < previous_open) and (current_open < current_close)  
+    return shadows and bodies
+    
 # deep_dip_strategy('BTC-USDT')
    
 tickers = get_sympols.get_symbols()
