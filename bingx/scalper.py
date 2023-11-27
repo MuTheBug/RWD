@@ -2,10 +2,53 @@ import pandas as pd
 from imports import *
 from get_klines import np
 
-import pandas as pd
 
 
 
+
+def get_support(dataframe):
+    """
+    Calculate support level
+    """
+    recent_lows = dataframe[-20:].low 
+    support = recent_lows.min()
+    return support
+
+def get_resistance(dataframe):
+    """
+    Calculate resistance level
+    """
+    recent_highs = dataframe[-20:].high
+    resistance = recent_highs.max()
+    return resistance
+
+def is_at_support(dataframe):
+    """
+    Check if price is at support level
+    """
+    support = get_support(dataframe)
+    
+    if dataframe.iloc[-1].close >= support and dataframe.iloc[-2].close >= support:
+        return False
+    
+    if dataframe.iloc[-2].close < support and dataframe.iloc[-1].close > dataframe.iloc[-2].close:
+        return True
+
+    return False
+
+def is_at_resistance(dataframe):
+    """
+    Check if price is at resistance level
+    """
+    resistance = get_resistance(dataframe)
+    
+    if dataframe.iloc[-1].close <= resistance and dataframe.iloc[-2].close <= resistance:
+        return False
+    
+    if dataframe.iloc[-2].close > resistance and dataframe.iloc[-1].close < dataframe.iloc[-2].close:
+        return True
+    
+    return False
 def is_in_channel(df):
     support_touches = 0
     resistance_touches = 0
@@ -18,47 +61,28 @@ def is_in_channel(df):
             
     return support_touches >= 3 and resistance_touches >= 3
 
- 
 
-def get_support(df):
-    recent_lows = df[-20:]['low']
-    return recent_lows.min()
-
-def get_resistance(df):
-    recent_highs = df[-20:]['high']
-    return recent_highs.max()  
-
-def is_at_support(df):
-    support = get_support(df)
-    current_price = df.iloc[-1]['close']
-    return current_price == support
-    
-def is_at_resistance(df):
-    resistance = get_resistance(df) 
-    current_price = df.iloc[-1]['close']
-    return current_price == resistance
-
-
-
-def print_channel_info(df):
-    support = get_support(df)
-    resistance = get_resistance(df)  
+def print_channel_info(dataframe):
+    """
+    Print support and resistance levels
+    """
+    support = get_support(dataframe)
+    resistance = get_resistance(dataframe)
     print(f"Support: {support}, Resistance: {resistance}")
 
-def deep_dip_strategy(sy):
-
-    for tf in ['15m','1h','2h','4h']:   
-        df = get_kline(sy,tf)        
+def deep_dip_strategy(symbol):
+    """
+    Main strategy function
+    """
+    timeframes = ['15m', '1h', '2h', '4h']
+    
+    for timeframe in timeframes:
+        df = get_kline(symbol, timeframe)  
         if is_in_channel(df):
             if is_at_support(df) or is_at_resistance(df):
-                print(f"{sy} at {tf}")
                 print_channel_info(df)
- 
             else:
-                print(f'skip {sy}')
- 
- 
- 
+                print(f"skipt {symbol}")
  
  
  

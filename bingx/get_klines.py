@@ -14,7 +14,7 @@ def get_kline(symbol='IMX-USDT',timeframe='4h'):
     params={
         'symbol':f'{symbol}',
         'interval':timeframe,
-        'limit':300,
+        'limit':900,
         'start_time':nine_days_ago,
         'end_time':now_seconds,
     }
