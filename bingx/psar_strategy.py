@@ -8,6 +8,7 @@ def deep_dip_strategy(sy):
     # timeframes = ['1h']
     for tf in timeframes:
         df = get_kline(sy,tf)
+        # returns open, close, high, low, volume prices
         # df = pd.read_csv('xxx.csv')
         # df = pd.DataFrame(df)
         macd_short = False#macd_rsi_strategy_short(df)
