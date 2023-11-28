@@ -3,7 +3,6 @@
 from imports import *
 from get_klines import np,pd
 
-pd.set_option('max_columns',None)
 
 def chech_trend(symbol):
         hour= ichi(get_kline(symbol,'1h'))
@@ -12,9 +11,11 @@ def chech_trend(symbol):
             return True
         two_hour= ichi(get_kline(symbol,'2h'))
         if two_hour:
+            print(f'{symbol} is trending on 2 hour')
             return True
         four_hour= ichi(get_kline(symbol,'4h'))
         if four_hour:
+            print(f'{symbol} is trending on 4 hour')
             return True
         return False
 
