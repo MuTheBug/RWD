@@ -32,7 +32,7 @@ def ichi(df):
 
 	df['lagging_span'] = ichi[0]['ICS_26']
 
-	condition= df['cloud_b'].iloc[-1]<df['cloud_a'].iloc[-1]<df['base_line'].iloc[-1]<df['conversion_line'].iloc[-1]<df['close'].iloc[-1]
+	condition= df['cloud_b'].iloc[-1]<df['cloud_a'].iloc[-1]#<df['base_line'].iloc[-1]<df['conversion_line'].iloc[-1]<df['close'].iloc[-1]
 	return condition
 	
 def sto(df):
@@ -42,21 +42,23 @@ def deep_dip_strategy(symbol):
     """
     Main strategy function
     """
-    timeframes = ['3m','5m','15m']
+    timeframes = ['15m']
 
     for timeframe in timeframes:
         
         
-        uptrend = chech_trend(symbol)
+        uptrend = ichi(get_kline(symbol=symbol,timeframe='1h'))
         if not uptrend:
             print(f'{symbol} is not trending')
             return False
-        df = get_kline(symbol, timeframe)
-        if sto(df):
-            print(f"{symbol} at {timeframe}, hurp!")
-            send_to_telegram(f'{symbol} at{timeframe}')
         else:
-            print(f"skipt {symbol}")
+            print(f'{symbol} is trending on {timeframe}')
+            df = get_kline(symbol, timeframe)
+            if sto(df):
+                print(f"{symbol} at {timeframe}, hurp!")
+                send_to_telegram(f'{symbol} at{timeframe}')
+            else:
+                print(f"skipt {symbol}")
 
 
 #deep_dip_strategy('BTC-USDT')
