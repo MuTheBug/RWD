@@ -63,8 +63,4 @@ tickers = get_sympols.get_symbols()
 
 loop.call_me(tickers=tickers, name_of_method=deep_dip_strategy)
 	
-<<<<<<< HEAD
 	
-=======
-	
->>>>>>> 6db3531 (sadsada)
