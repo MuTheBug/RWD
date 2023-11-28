@@ -68,14 +68,14 @@ def deep_dip_strategy(symbol):
     """
     Main strategy function
     """
-    timeframe='5m'
+    timeframe='15m'
     df = get_kline(symbol, timeframe)
-    if ema_cross_up(df) and sto_over_80(df):
+    if ema_cross_up(df):
         print(f"Long {symbol}!")
         send_to_telegram(f'Long {symbol}')
-    if ema_cross_down(df) and sto_under_20(df):
-        print(f"Short {symbol}!")
-        send_to_telegram(f'Short {symbol}')
+    # if ema_cross_down(df) and sto_under_20(df):
+    #     print(f"Short {symbol}!")
+    #     send_to_telegram(f'Short {symbol}')
     else:
         print(f"skip {symbol}")
 
