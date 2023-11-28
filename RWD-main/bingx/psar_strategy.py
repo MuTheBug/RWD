@@ -20,44 +20,49 @@ def chech_trend(symbol):
         return False
 
 def ichi(df):
-	ichi = ta.ichimoku(high=df['high'],low=df['low'],close=df['close'])
-	#print(ichi[0].tail(30))
-	df['cloud_a'] = ichi[0]['ISA_9']
-
-	df['cloud_b'] = ichi[0]['ISB_26']
-
-	df['conversion_line'] = ichi[0]['ITS_9']
-
-	df['base_line'] = ichi[0]['IKS_26']
-
-	df['lagging_span'] = ichi[0]['ICS_26']
-
-	condition= df['cloud_b'].iloc[-1]<df['cloud_a'].iloc[-1]<df['base_line'].iloc[-1]<df['conversion_line'].iloc[-1]<df['close'].iloc[-1]
-	return condition
+    high = df['high']
+    low = df['low']
+    close = df['close']
+    
+    # Tenkan-sen (Conversion Line)
+    period9_high = high.rolling(window=6).max()
+    period9_low = low.rolling(window=6).min()
+    tenkan_sen = (period9_high + period9_low) / 2
+    
+    # Kijun-sen (Base Line)
+    period26_high = high.rolling(window=13).max()
+    period26_low = low.rolling(window=13).min()
+    kijun_sen = (period26_high + period26_low) / 2
+    
+    # Senkou Span A (Leading Span A)
+    senkou_a = ((tenkan_sen + kijun_sen) / 2).shift(26)
+    
+    # Senkou Span B (Leading Span B)
+    period52_high = high.rolling(window=52).max()
+    period52_low = low.rolling(window=52).min()
+    senkou_b = ((period52_high + period52_low) / 2).shift(26)
+    
+    # Add to dataframe
+    df['conversion_line'] = tenkan_sen 
+    df['base_line'] = kijun_sen
+    df['senkou_a'] = senkou_a
+    df['senkou_b'] = senkou_b
+    return df['conversion_line'].iloc[-2]<df['base_line'].iloc[-2] and df['conversion_line'].iloc[-1]>df['base_line'].iloc[-1] 
 	
 def sto(df):
 	st= ta.stoch(high=df['high'],low=df['low'],close=df['close'])
-	return st['STOCHd_14_3_3'].iloc[-1]<20 or st['STOCHd_14_3_3'].iloc[-1] > 80
+	return st['STOCHd_14_3_3'].iloc[-1]<20 #or st['STOCHd_14_3_3'].iloc[-1] > 80
 def deep_dip_strategy(symbol):
     """
     Main strategy function
     """
-    timeframes = ['3m','5m','15m','30m']
-
-    for timeframe in timeframes:
-        
-        
-        uptrend = chech_trend(symbol=symbol)
-        if not uptrend:
-            print(f'{symbol} is not trending')
-            return False
-        else:
-            df = get_kline(symbol, timeframe)
-            if sto(df):
-                print(f"{symbol} at {timeframe}, hurp!")
-                send_to_telegram(f'{symbol} at{timeframe}')
-            else:
-                print(f"skipt {symbol}")
+    timeframe= '15m'
+    df = get_kline(symbol, timeframe)
+    if ichi(df):
+        print(f"{symbol} at {timeframe}, hurp!")
+        send_to_telegram(f'{symbol} at{timeframe}')
+    else:
+        print(f"skipt {symbol}")
 
 
 #deep_dip_strategy('BTC-USDT')
