@@ -49,20 +49,35 @@ def ichi(df):
     df['senkou_b'] = senkou_b
     return df['conversion_line'].iloc[-3]<df['base_line'].iloc[-3] and df['conversion_line'].iloc[-2]>df['base_line'].iloc[-2] 
 	
-def sto(df):
+def sto_over_80(df):
 	st= ta.stoch(high=df['high'],low=df['low'],close=df['close'])
-	return st['STOCHd_14_3_3'].iloc[-1]<20 #or st['STOCHd_14_3_3'].iloc[-1] > 80
+	return st['STOCHd_14_3_3'].iloc[-1]<80 #or st['STOCHd_14_3_3'].iloc[-1] > 80	
+def sto_under_20(df):
+	st= ta.stoch(high=df['high'],low=df['low'],close=df['close'])
+	return st['STOCHd_14_3_3'].iloc[-1]<80 #or st['STOCHd_14_3_3'].iloc[-1] > 80
+
+def ema_cross_up(df):
+    df['ema26'] = ta.ema(close=df['close'],length=26)
+    df['ema100'] = ta.ema(close=df['close'],length=100)
+    return df['ema26'].iloc[-2]<df['ema100'].iloc[-2] and df['ema26'].iloc[-1]>df['ema100'].iloc[-1] 
+def ema_cross_down(df):
+    df['ema26'] = ta.ema(close=df['close'],length=26)
+    df['ema100'] = ta.ema(close=df['close'],length=100)
+    return df['ema26'].iloc[-2]>df['ema100'].iloc[-2] and df['ema26'].iloc[-1]<df['ema100'].iloc[-1] 
 def deep_dip_strategy(symbol):
     """
     Main strategy function
     """
-    timeframe= '15m'
+    timeframe='15m'
     df = get_kline(symbol, timeframe)
-    if ichi(df):
-        print(f"{symbol} at {timeframe}, hurp!")
-        send_to_telegram(f'{symbol} at{timeframe}')
+    if ema_cross_up(df) and sto_over_80(df):
+        print(f"Long {symbol}!")
+        send_to_telegram(f'Long {symbol}')
+    if ema_cross_down(df) and sto_under_20(df):
+        print(f"Short {symbol}!")
+        send_to_telegram(f'Short {symbol}')
     else:
-        print(f"skipt {symbol}")
+        print(f"skip {symbol}")
 
 
 #deep_dip_strategy('BTC-USDT')
