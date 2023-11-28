@@ -51,24 +51,24 @@ def ichi(df):
 	
 def sto_over_80(df):
 	st= ta.stoch(high=df['high'],low=df['low'],close=df['close'])
-	return st['STOCHd_14_3_3'].iloc[-1]<80 #or st['STOCHd_14_3_3'].iloc[-1] > 80	
+	return st['STOCHd_14_3_3'].iloc[-1]>80 #or st['STOCHd_14_3_3'].iloc[-1] > 80	
 def sto_under_20(df):
 	st= ta.stoch(high=df['high'],low=df['low'],close=df['close'])
-	return st['STOCHd_14_3_3'].iloc[-1]<80 #or st['STOCHd_14_3_3'].iloc[-1] > 80
+	return st['STOCHd_14_3_3'].iloc[-1]<20 #or st['STOCHd_14_3_3'].iloc[-1] > 80
 
 def ema_cross_up(df):
     df['ema26'] = ta.ema(close=df['close'],length=26)
     df['ema100'] = ta.ema(close=df['close'],length=100)
     return df['ema26'].iloc[-2]<df['ema100'].iloc[-2] and df['ema26'].iloc[-1]>df['ema100'].iloc[-1] 
 def ema_cross_down(df):
-    df['ema26'] = ta.ema(close=df['close'],length=26)
-    df['ema100'] = ta.ema(close=df['close'],length=100)
-    return df['ema26'].iloc[-2]>df['ema100'].iloc[-2] and df['ema26'].iloc[-1]<df['ema100'].iloc[-1] 
+    df['ema260'] = ta.ema(close=df['close'],length=26)
+    df['ema1000'] = ta.ema(close=df['close'],length=100)
+    return df['ema260'].iloc[-2]>df['ema1000'].iloc[-2] and df['ema260'].iloc[-1]<df['ema1000'].iloc[-1] 
 def deep_dip_strategy(symbol):
     """
     Main strategy function
     """
-    timeframe='15m'
+    timeframe='5m'
     df = get_kline(symbol, timeframe)
     if ema_cross_up(df) and sto_over_80(df):
         print(f"Long {symbol}!")
