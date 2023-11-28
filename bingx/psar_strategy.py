@@ -8,14 +8,14 @@ pd.set_option('max_columns',None)
 def chech_trend(symbol):
         hour= ichi(get_kline(symbol,'1h'))
         if hour:
-        	print(f'{symbol} is trending on 1 hour')
-        	return True
+            print(f'{symbol} is trending on 1 hour')
+            return True
         two_hour= ichi(get_kline(symbol,'2h'))
         if two_hour:
-        	return True
+            return True
         four_hour= ichi(get_kline(symbol,'4h'))
         if four_hour:
-        	return True
+            return True
         return False
 
 def ichi(df):
@@ -36,7 +36,7 @@ def ichi(df):
 	
 def sto(df):
 	st= ta.stoch(high=df['high'],low=df['low'],close=df['close'])
-	return st['STOCHd_14_3_3'].iloc[-1]<20
+	return st['STOCHd_14_3_3'].iloc[-1]<20 or st['STOCHd_14_3_3'].iloc[-1] > 80
 def deep_dip_strategy(symbol):
     """
     Main strategy function
@@ -48,8 +48,8 @@ def deep_dip_strategy(symbol):
         
         uptrend = chech_trend(symbol)
         if not uptrend:
-        	print(f'{symbol} is not trending')
-        	return False
+            print(f'{symbol} is not trending')
+            return False
         df = get_kline(symbol, timeframe)
         if sto(df):
             print(f"{symbol} at {timeframe}, hurp!")
