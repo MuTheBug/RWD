@@ -47,7 +47,7 @@ def ichi(df):
     df['base_line'] = kijun_sen
     df['senkou_a'] = senkou_a
     df['senkou_b'] = senkou_b
-    return df['conversion_line'].iloc[-2]<df['base_line'].iloc[-2] and df['conversion_line'].iloc[-1]>df['base_line'].iloc[-1] 
+    return df['conversion_line'].iloc[-3]<df['base_line'].iloc[-3] and df['conversion_line'].iloc[-2]>df['base_line'].iloc[-2] 
 	
 def sto(df):
 	st= ta.stoch(high=df['high'],low=df['low'],close=df['close'])
