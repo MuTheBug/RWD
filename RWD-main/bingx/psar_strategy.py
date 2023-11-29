@@ -55,24 +55,28 @@ def sto_over_80(df):
 def sto_under_20(df):
 	st= ta.stoch(high=df['high'],low=df['low'],close=df['close'])
 	return st['STOCHd_14_3_3'].iloc[-1]<20 #or st['STOCHd_14_3_3'].iloc[-1] > 80
-
+def adx(df):
+    adx = ta.adx(high=df['high'],low=df['low'],close=df['close'])
+    return adx['ADX_14'].iloc[-1] > 25
 def ema_cross_up(df):
     df['ema26'] = ta.ema(close=df['close'],length=26)
     df['ema100'] = ta.ema(close=df['close'],length=100)
     return df['ema26'].iloc[-2]<df['ema100'].iloc[-2] and df['ema26'].iloc[-1]>df['ema100'].iloc[-1] 
 def ema_cross_down(df):
-    df['ema260'] = ta.ema(close=df['close'],length=26)
-    df['ema1000'] = ta.ema(close=df['close'],length=100)
+    df['ema260'] = ta.ema(close=df['close'],length=5)
+    df['ema1000'] = ta.ema(close=df['close'],length=20)
     return df['ema260'].iloc[-2]>df['ema1000'].iloc[-2] and df['ema260'].iloc[-1]<df['ema1000'].iloc[-1] 
 def deep_dip_strategy(symbol):
     """
     Main strategy function
     """
-    timeframe='15m'
+    timeframe='1h'
     df = get_kline(symbol, timeframe)
-    if ema_cross_up(df):
-        print(f"Long {symbol}!")
-        send_to_telegram(f'Long {symbol}')
+    df_adx = get_kline(symbol,'4h')
+    adxs = adx(df_adx)
+    if ema_cross_down(df) and adxs:
+        print(f"Short {symbol}!")
+        send_to_telegram(f'Short {symbol}')
     # if ema_cross_down(df) and sto_under_20(df):
     #     print(f"Short {symbol}!")
     #     send_to_telegram(f'Short {symbol}')
