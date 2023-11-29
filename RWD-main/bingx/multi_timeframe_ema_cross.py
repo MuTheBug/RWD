@@ -22,7 +22,7 @@ def sto_over_80(symbol):
     on_15m= st['STOCHd_14_3_3'].iloc[-1]>80 #or st['STOCHd_14_3_3'].iloc[-1] > 80	    
     dfs= get_kline(symbol,'1h')
     stx= ta.stoch(high=dfs['high'],low=dfs['low'],close=dfs['close'])
-    on_1h= stx['STOCHd_14_3_3'].iloc[-2]<=20 or stx['STOCHd_14_3_3'].iloc[-1] <=20 or stx['STOCHd_14_3_3'].iloc[-3] <=20
+    on_1h= stx['STOCHd_14_3_3'].iloc[-2]<=23 or stx['STOCHd_14_3_3'].iloc[-1] <=23 or stx['STOCHd_14_3_3'].iloc[-3] <=23
     return on_15m and on_1h
 
 
