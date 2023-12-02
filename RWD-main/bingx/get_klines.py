@@ -48,3 +48,6 @@ def get_kline(symbol='IMX-USDT',timeframe='4h'):
     # data.to_csv('file.csv')
     return data
 
+def load_from_file():
+    df = pd.read_csv('/home/m/school_books/RWD/RWD-main/file.csv')
+    return df
