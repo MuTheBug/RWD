@@ -3,6 +3,7 @@ from get_klines import *
 
 def main(symbol):
     timeframes = ['15m','30m','1h','2h','4h']
+    timeframes = ['1d']
     for t in timeframes:
         df = get_kline(symbol,t)
         mac = macd_signal(df)
