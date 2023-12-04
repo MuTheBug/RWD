@@ -10,7 +10,7 @@ def main(symbol):
         ma200 = sma_200(df)
         if mac and ma200:
             rsi_direction = rsi_sloping_up(df)
-            print(f"{symbol} on {t}  is rsi sloping up?:{rsi_direction} +++++++++++++++++++++++++++++++++++++++++++++++++++")
+            send_to_telegram(f"{symbol} on {t}  is rsi sloping up?:{rsi_direction} +++++++++++++++++++++++++++++++++++++++++++++++++++")
         else:
             print(f'skip {symbol} on {t}')
 
