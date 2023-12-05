@@ -5,8 +5,7 @@ def macd_signal(df):
     macd = ta.macd(close=df['close'])
     # macd['signal'] = (macd['MACDh_12_26_9'] < 0) & (macd['MACDh_12_26_9'].shift(1) > 0)
     # macd['signal'] = (macd['MACDh_12_26_9'] < macd['MACDh_12_26_9'].shift(1))
-    return macd['MACDh_12_26_9'].iloc[-1] > macd['MACDh_12_26_9'].iloc[-2]> macd['MACDh_12_26_9'].iloc[-3]
-
+    return macd['MACDh_12_26_9'].iloc[-1] > macd['MACDh_12_26_9'].iloc[-2]> macd['MACDh_12_26_9'].iloc[-3]> macd['MACDh_12_26_9'].iloc[-4]
 def stoc_signal_above_80(df):
     st= ta.stoch(high=df['high'],low=df['low'],close=df['close'])
     above_80= st['STOCHd_14_3_3'].iloc[-1] > 80
