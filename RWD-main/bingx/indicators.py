@@ -30,7 +30,16 @@ def rsi_sloping_up(df):
     under_40 = df['rsi'].iloc[-1] <=30
     return under_40
 
-def bb(df):
+def rsi_sloping_down(df):
+    df['rsi'] = ta.rsi(close=df['close'],length=14)
+    # slice = df['rsi'].tail(2).is_monotonic_increasing
+    under_40 = df['rsi'].iloc[-1] >=70
+    return under_40
+
+def bb_up(df):
+    bba= ta.bbands(close=df['close'])
+    return bba['BBU_5_2.0'].iloc[-1]>df['close'].iloc[-1]
+def bb_down(df):
     bba= ta.bbands(close=df['close'])
     return bba['BBL_5_2.0'].iloc[-1]<df['close'].iloc[-1]
     
