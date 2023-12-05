@@ -3,7 +3,7 @@ from get_klines import *
 
 def main(symbol):
     timeframes = ['15m','30m','1h','2h','4h']
-    timeframes = ['4h']
+    timeframes = ['1h']
     for t in timeframes:
         above_sma200 = get_kline(symbol,'1d')
         above_200 = above_sma_200(above_sma200)
