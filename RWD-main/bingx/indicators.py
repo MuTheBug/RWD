@@ -3,7 +3,7 @@ from imports import *
 import get_klines
 def macd_signal(df):
     macd = ta.macd(close=df['close'])
-    macd['signal'] = (macd['MACDh_12_26_9'] > 0) & (macd['MACDh_12_26_9'].shift(1) < 0)
+    macd['signal'] = (macd['MACDh_12_26_9'] < 0) & (macd['MACDh_12_26_9'].shift(1) > 0)
     return macd['signal'].iloc[-1]
 
 def stoc_signal_above_80(df):
@@ -16,14 +16,17 @@ def stoc_signal_under_20(df):
     under_20= st['STOCHd_14_3_3'].iloc[-1] < 20
     return under_20
 
-def sma_200(df):
+def above_sma_200(df):
     df['sma200'] = ta.sma(close=df['close'],length=200)
     df['sma50'] = ta.sma(close=df['close'],length=50)
-    up = df['sma200'].tail(10).is_monotonic_increasing
-    down = df['sma200'].tail(10).is_monotonic_decreasing
-    
-    x={'down':down,'up':up}
-    return x
+    up = df['sma200'].tail(10).is_monotonic_increasing and df['close'].iloc[-1]>df['sma200'].iloc[-1]
+ 
+    return up
+def above_sma_50(df):
+    df['sma50'] = ta.sma(close=df['close'],length=50)
+    up = df['sma50'].tail(10).is_monotonic_increasing and df['close'].iloc[-1]>df['sma50'].iloc[-1]
+ 
+    return up
 
 def rsi_sloping_up(df):
     df['rsi'] = ta.rsi(close=df['close'],length=14)
