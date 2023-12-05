@@ -14,17 +14,17 @@ def main(symbol):
         bb_downs = bb_down(df)
         bb_upss = bb_up(df)
         ma200 = sma_200(df)
-        if above_200:
+        if above_200['up']:
             if rsi_up and  bb_downs:
                 send_to_telegram(f"LONG {symbol} on {t}  ")
-            if rsi_down and bb_upss:
-                send_to_telegram(f"SHORT {symbol} on {t}")
-            else:
+
                             
                 print(f'skip {symbol} on {t}')
+        if above_200['down']:
+            if rsi_down and bb_upss:
+                send_to_telegram(f"SHORT {symbol} on {t}")
         else:
-                        
-            print(f'skip {symbol} on 1 day')
+                print(f'skip {symbol} on 1 day')
 
 
 

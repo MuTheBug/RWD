@@ -19,10 +19,11 @@ def stoc_signal_under_20(df):
 def sma_200(df):
     df['sma200'] = ta.sma(close=df['close'],length=200)
     df['sma50'] = ta.sma(close=df['close'],length=50)
-    slice = df['sma200'].tail(10).is_monotonic_increasing
-    # print(slice)
-
-    return slice
+    up = df['sma200'].tail(10).is_monotonic_increasing
+    down = df['sma200'].tail(10).is_monotonic_decreasing
+    
+    x={'down':down,'up':up}
+    return x
 
 def rsi_sloping_up(df):
     df['rsi'] = ta.rsi(close=df['close'],length=14)
@@ -46,5 +47,5 @@ def bb_down(df):
 # x = get_klines.load_from_file()
 
 # # stoc_signal(x)
-# z = bb(x)
+# z = sma_200(x)
 # print(z)
