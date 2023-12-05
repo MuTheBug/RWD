@@ -28,13 +28,13 @@ def sma_200(df):
 def rsi_sloping_up(df):
     df['rsi'] = ta.rsi(close=df['close'],length=14)
     # slice = df['rsi'].tail(2).is_monotonic_increasing
-    under_40 = df['rsi'].iloc[-1] <=30
+    under_40 = df['rsi'].iloc[-2] <=30 and df['rsi'].iloc[-1] > 30
     return under_40
 
 def rsi_sloping_down(df):
     df['rsi'] = ta.rsi(close=df['close'],length=14)
     # slice = df['rsi'].tail(2).is_monotonic_increasing
-    under_40 = df['rsi'].iloc[-1] >=70
+    under_40 = df['rsi'].iloc[-2] >=70 and df['rsi'].iloc[-1] < 70
     return under_40
 
 def bb_up(df):
