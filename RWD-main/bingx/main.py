@@ -3,14 +3,16 @@ from get_klines import *
 
 def main(symbol):
     timeframes = ['15m','30m','1h','2h','4h']
-    timeframes = ['1d']
+    timeframes = ['4h']
     for t in timeframes:
-        df = get_kline(symbol,t)
-        mac = macd_signal(df)
+        above_sma200 = get_kline(symbol,'1d')
+        df = get_kline(symbol,'4h')
+        
+        rs = rsi_sloping_up(df)
         ma200 = sma_200(df)
-        if mac and ma200:
+        if rs and ma200 and above_sma200:
             rsi_direction = rsi_sloping_up(df)
-            send_to_telegram(f"{symbol} on {t}  is rsi sloping up?:{rsi_direction} +++++++++++++++++++++++++++++++++++++++++++++++++++")
+            send_to_telegram(f"{symbol} on {t} +++")
         else:
             print(f'skip {symbol} on {t}')
 

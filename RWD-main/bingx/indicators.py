@@ -18,22 +18,24 @@ def stoc_signal_under_20(df):
 
 def sma_200(df):
     df['sma200'] = ta.sma(close=df['close'],length=200)
-    df['signal'] = (df['close'] > df['sma200'])
+    df['sma50'] = ta.sma(close=df['close'],length=50)
     slice = df['sma200'].tail(10).is_monotonic_increasing
     # print(slice)
 
-    return df['signal'].iloc[-1] and slice
+    return slice
 
 def rsi_sloping_up(df):
     df['rsi'] = ta.rsi(close=df['close'],length=14)
-    slice = df['rsi'].tail(2).is_monotonic_increasing
-    under_40 = df['rsi'].iloc[-1] <=40
-    return slice and under_40
+    # slice = df['rsi'].tail(2).is_monotonic_increasing
+    under_40 = df['rsi'].iloc[-1] <=30
+    return under_40
 
-
+def bb(df):
+    bba= ta.bbands(close=df['close'])
+    return bba['BBL_5_2.0'].iloc[-1]<df['close'].iloc[-1]
     
 # x = get_klines.load_from_file()
 
 # # stoc_signal(x)
-# z = sma_200(x)
+# z = bb(x)
 # print(z)
