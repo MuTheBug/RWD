@@ -24,7 +24,7 @@ def above_sma_200(df):
     return up
 def above_sma_50(df):
     df['sma50'] = ta.sma(close=df['close'],length=50)
-    up = df['sma50'].tail(10).is_monotonic_increasing and df['close'].iloc[-1]>df['sma50'].iloc[-1]
+    up = df['sma50'].tail(5).is_monotonic_increasing and df['close'].iloc[-1]>df['sma50'].iloc[-1]
  
     return up
 
