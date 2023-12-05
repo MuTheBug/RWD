@@ -7,16 +7,16 @@ def main(symbol):
     for t in timeframes:
         above_sma200 = get_kline(symbol,'1d')
         above_200 = above_sma_200(above_sma200)
-        df = get_kline(symbol,'1h')
+        df = get_kline(symbol,'4h')
         
-        ma50 = above_sma_50(df)
+        # ma50 = above_sma_50(df)
         macds = macd_signal(df)
         if above_200:
-            if ma50 and  macds:
+            if macds:
                 send_to_telegram(f"LONG {symbol} on 1h  ")
 
                             
-                print(f'skip {symbol} on {t}')
+                print(f'skip {symbol} on {t}++')
 
         else:
                 print(f'skip {symbol} has no trend')
