@@ -3,17 +3,17 @@ from get_klines import *
 
 def main(symbol):
     timeframes = ['15m','30m','1h','2h','4h']
-    timeframes = ['1h']
+    timeframes = ['1h','4h','15m']
     for t in timeframes:
         above_sma200 = get_kline(symbol,'1d')
         above_200 = above_sma_200(above_sma200)
-        df = get_kline(symbol,'4h')
+        df = get_kline(symbol,t)
         
         # ma50 = above_sma_50(df)
         macds = macd_signal(df)
         if above_200:
             if macds:
-                send_to_telegram(f"LONG {symbol} on 1h  ")
+                send_to_telegram(f"LONG {symbol} on {t}  ")
 
                             
                 print(f'skip {symbol} on {t}++')
