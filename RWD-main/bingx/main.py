@@ -8,15 +8,18 @@ def main(symbol):
         above_sma200 = get_kline(symbol,'1d')
         above_200 = above_sma_200(above_sma200)
         df = get_kline(symbol,t)
-        r = rsi_sloping_up(df)
+        # r = rsi_sloping_up(df)
         # ma50 = above_sma_50(df)
-        macds = macd_signal(df)
+        # macds = macd_signal(df)
+        s = stoc_signal_above_80(df)
         if above_200:
-            if r:
-                send_to_telegram(f"LONG {symbol} on {t}  ")
+            if s:
+                send_to_telegram(f"LONG {symbol} on {t} ++++")
+                print(f"LONG {symbol} on {t} +++++++++++++++++++++++++++++++++++++++++++++")
 
                             
-                print(f'skip {symbol} on {t}++')
+            else:
+                print(f'skip {symbol} on {t}')
 
         else:
                 print(f'skip {symbol} has no trend')
