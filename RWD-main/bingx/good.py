@@ -1,7 +1,7 @@
 from indicators import *
 from get_klines import *
 
-
+pd.options.mode.chained_assignment = None # default='warn'
 
 def trend_following_strategy(symbol, timeframe, short_window=100, long_window=400):
  # Get the data
