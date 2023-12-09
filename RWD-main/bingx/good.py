@@ -29,7 +29,7 @@ def trend_following_strategy(symbol, timeframe, short_window=100, long_window=40
 
 def main(symbol):
     
-    timeframes = ['15m','30m','2h','1h','4h','1d']
+    timeframes = ['5m','15m','30m','2h','1h','4h','1d']
     for t in timeframes:
         s = trend_following_strategy(symbol, t)
         if s:
