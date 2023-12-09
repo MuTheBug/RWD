@@ -33,7 +33,7 @@ def main(symbol):
     for t in timeframes:
         s = trend_following_strategy(symbol, t)
         if s:
-            send_to_telegram(f"LONG {symbol} on {t} ++++")
+            send_to_telegram(f"{symbol} on {t} ++++")
             print(f" {symbol} on {t} +++++++++++++++++++++++++++++++++++++++++++++")
 
                         
