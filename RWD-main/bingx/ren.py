@@ -3,7 +3,7 @@ from imports import *
 
 def cal_renk(df):
     df['atr'] = ta.atr(high=df['high'],low=df['low'],close=df['close'],length=14)
-    r = Renko(df.atr.iloc[-1]/2,df['close'])
+    r = Renko(df.atr.iloc[-1]/4,df['close'])
     r.create_renko()
     renks = pd.DataFrame(r.bricks)
     return renks
@@ -15,13 +15,13 @@ def sma10(df):
 
 def main(symbol):
     
-    timeframes = ['5m','15m','30m','2h','1h','4h','1d']
+    timeframes = ['2h','1h','4h','1d']
     for t in timeframes:
         df = get_kline(symbol, t)
         s = sma10(df)
         r = cal_renk(df)
-        down=  s['sma10'].iloc[-1] > r.close.iloc[-1] and s['sma10'].iloc[-2] < r.close.iloc[-2] and r.type =='down'
-        up=  s['sma10'].iloc[-1] < r.close.iloc[-1] and s['sma10'].iloc[-2] > r.close.iloc[-2] and r.type =='up'
+        down=  s['sma10'].iloc[-1] > r.close.iloc[-1] and s['sma10'].iloc[-2] < r.close.iloc[-2] 
+        up=  s['sma10'].iloc[-1] < r.close.iloc[-1] and s['sma10'].iloc[-2] > r.close.iloc[-2] 
         if up:
             send_to_telegram(f"Long {symbol} on {t} ++++")
             print(f"Long {symbol} on {t} +++++++++++++++++++++++++++++++++++++++++++++")
