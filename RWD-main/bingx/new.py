@@ -11,7 +11,7 @@ pd.options.mode.chained_assignment = None # default='warn'
 
 def main(symbol):
     
-    timeframes = ['15m','30m','2h','1h','4h','1d']
+    timeframes = ['5m','15m','30m','2h','1h','4h','1d']
     for t in timeframes:
         data = get_kline(symbol, t)
         up = ema_cross_up(data)
