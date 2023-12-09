@@ -20,7 +20,19 @@ def above_sma_200(df):
     df['sma50'] = ta.sma(close=df['close'],length=50)
     up = df['sma200'].tail(5).is_monotonic_increasing and df['close'].iloc[-1]>df['sma200'].iloc[-1]
  
-    return up
+ 
+def ema_cross_up(df):
+    df['ema400'] = ta.ema(close=df['close'],length=400)
+    df['ema100'] = ta.ema(close=df['close'],length=100)
+    up = df['ema100'].iloc[-1]>df['ema400'].iloc[-1]and df['ema100'].iloc[-2]<df['ema400'].iloc[-2]
+ 
+    return up 
+def ema_cross_down(df):
+    df['ema400'] = ta.ema(close=df['close'],length=400)
+    df['ema100'] = ta.ema(close=df['close'],length=100)
+    down = df['ema100'].iloc[-1]<df['ema400'].iloc[-1]and df['ema100'].iloc[-2]>df['ema400'].iloc[-2]
+ 
+    return down
 def above_sma_50(df):
     df['sma50'] = ta.sma(close=df['close'],length=50)
     up = df['sma50'].tail(5).is_monotonic_increasing 
