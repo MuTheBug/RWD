@@ -11,8 +11,8 @@ def main(symbol):
         # r = rsi_sloping_up(df)
         # ma50 = above_sma_50(df)
         # macds = macd_signal(df)
-        s = stoc_signal_above_80(df)
-        if above_200:
+        s = macd_signal(df)
+        if True:
             if s:
                 send_to_telegram(f"LONG {symbol} on {t} ++++")
                 print(f"LONG {symbol} on {t} +++++++++++++++++++++++++++++++++++++++++++++")
