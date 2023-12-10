@@ -37,6 +37,7 @@ def identify_swing_opportunities(df, symbol):
 
 def main(symbol):
     # Get historical data for the specified symbol
+    timeframes = ['5m','15m','30m','1h','2h','4h']
     df = get_kline(symbol)
 
  
