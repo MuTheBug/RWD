@@ -15,7 +15,7 @@ def identify_primary_trend(df):
         trend = 'Sideways'
     return trend
 
-def identify_swing_opportunities(df, symbol):
+def identify_swing_opportunities(df, symbol,t):
     # Calculate support and resistance levels
     support_levels = df['close'].rolling(window=20).min()
     resistance_levels = df['close'].rolling(window=20).max()
@@ -25,10 +25,10 @@ def identify_swing_opportunities(df, symbol):
     trend = identify_primary_trend(ds)
 
     if df['close'].iloc[-1] > resistance_levels.iloc[-1] and trend == 'Downtrend':
-        send_to_telegram(f'Uptrend Breakout: {symbol}')
+        send_to_telegram(f'Uptrend Breakout: {symbol} on {t}')
         print(f'Uptrend Breakout: {symbol}')
     elif df['close'].iloc[-1] < support_levels.iloc[-1] and trend == 'Uptrend':
-        send_to_telegram(f'Downtrend Breakout: {symbol}')
+        send_to_telegram(f'Downtrend Breakout: {symbol} on {t}')
         print(f'Downtrend Breakout: {symbol}')
     else:
         print(f'skip {symbol}')
@@ -38,10 +38,11 @@ def identify_swing_opportunities(df, symbol):
 def main(symbol):
     # Get historical data for the specified symbol
     timeframes = ['5m','15m','30m','1h','2h','4h']
-    df = get_kline(symbol)
+    for t in timeframes:
+        df = get_kline(symbol,t)
 
- 
-    identify_swing_opportunities(df,symbol)
+    
+        identify_swing_opportunities(df,symbol,t)
 
 
 
