@@ -3,11 +3,11 @@ from imports import *
 from get_klines import get_kline
 def macd_signal_up(df):
     macd = ta.macd(close=df['close'])
-    return macd['MACDh_12_26_9'].iloc[-1] > 0 
+    return macd['MACDh_12_26_9'].iloc[-1] > 0 and macd['MACDh_12_26_9'].iloc[-2] < 0 
 
 def macd_signal_down(df):
     macd = ta.macd(close=df['close'])
-    return macd['MACDh_12_26_9'].iloc[-1] < 0 
+    return macd['MACDh_12_26_9'].iloc[-1] < 0 and macd['MACDh_12_26_9'].iloc[-2] > 0 
 
 def macd_signal_up_crossing(df):
     macd = ta.macd(close=df['close'])
