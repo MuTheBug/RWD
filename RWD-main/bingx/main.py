@@ -6,10 +6,10 @@ def main(symbol):
     daily = get_kline(symbol,'1d')
     four_hours = get_kline(symbol,'4h')
 
-    up = macd_signal_up(daily)
-    up1 = macd_signal_up_crossing(four_hours)
-    down = macd_signal_down(daily)
-    down1 = macd_signal_down_crossing(four_hours)
+    up = macd_signal_up(four_hours)
+    up1 = macd_signal_down_crossing(daily)
+    down = macd_signal_down(four_hours)
+    down1 = macd_signal_up_crossing(daily)
     if up and up1:
         send_to_telegram(f"LONG {symbol} ++++")
         print(f"LONG {symbol}  +++++++++++++++++++++++++++++++++++++++++++++")
