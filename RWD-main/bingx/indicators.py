@@ -3,12 +3,8 @@ from imports import *
 import get_klines
 def macd_signal(df):
     macd = ta.macd(close=df['close'])
-    # macd['signal'] = (macd['MACDh_12_26_9'] < 0) & (macd['MACDh_12_26_9'].shift(1) > 0)
-    # macd['signal'] = (macd['MACDh_12_26_9'] < macd['MACDh_12_26_9'].shift(1))
-    return macd['MACDh_12_26_9'].iloc[-1] > 0 and macd['MACDh_12_26_9'].iloc[-2]< 0
-    st= ta.stoch(high=df['high'],low=df['low'],close=df['close'])
-    above_80= st['STOCHd_14_3_3'].iloc[-1] <= 80 and st['STOCHd_14_3_3'].iloc[-1] > 80
-    return above_80
+    return macd['MACDh_12_26_9'].iloc[-1] > 0 
+
 
 def stoc_signal_under_20(df):
     st= ta.stoch(high=df['high'],low=df['low'],close=df['close'])
@@ -22,14 +18,14 @@ def above_sma_200(df):
  
  
 def ema_cross_up(df):
-    df['ema400'] = ta.ema(close=df['close'],length=400)
-    df['ema100'] = ta.ema(close=df['close'],length=100)
+    df['ema400'] = ta.sma(close=df['close'],length=45)
+    df['ema100'] = ta.sma(close=df['close'],length=15)
     up = df['ema100'].iloc[-1]>df['ema400'].iloc[-1]and df['ema100'].iloc[-2]<df['ema400'].iloc[-2]
  
     return up 
 def ema_cross_down(df):
-    df['ema400'] = ta.ema(close=df['close'],length=400)
-    df['ema100'] = ta.ema(close=df['close'],length=100)
+    df['ema400'] = ta.sma(close=df['close'],length=45)
+    df['ema100'] = ta.sma(close=df['close'],length=15)
     down = df['ema100'].iloc[-1]<df['ema400'].iloc[-1]and df['ema100'].iloc[-2]>df['ema400'].iloc[-2]
  
     return down
