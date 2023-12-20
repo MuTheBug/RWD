@@ -1,30 +1,31 @@
 
+import numpy as np
 from imports import *
-from get_klines import get_kline
-def macd_signal_up(df):
+import get_klines
+def just_crossed_up(df):
     macd = ta.macd(close=df['close'])
-    return macd['MACDh_12_26_9'].iloc[-1] > 0 and macd['MACDh_12_26_9'].iloc[-2] < 0 
+    return macd['MACDh_12_26_9'].iloc[-1] > 0 and macd['MACDh_12_26_9'].iloc[-2]< 0
+    
 
-def macd_signal_down(df):
+def just_crossed_down(df):
     macd = ta.macd(close=df['close'])
-    return macd['MACDh_12_26_9'].iloc[-1] < 0 and macd['MACDh_12_26_9'].iloc[-2] > 0 
+    return macd['MACDh_12_26_9'].iloc[-1] < 0 and macd['MACDh_12_26_9'].iloc[-2]> 0
 
-def macd_signal_up_crossing(df):
+
+def already_up_going_down(df):
     macd = ta.macd(close=df['close'])
-    return macd['MACDh_12_26_9'].iloc[-1] > macd['MACDh_12_26_9'].iloc[-2] and macd['MACDh_12_26_9'].iloc[-1] > 0
+    return macd['MACDh_12_26_9'].iloc[-1]< macd['MACDh_12_26_9'].iloc[-2] and macd['MACDh_12_26_9'].iloc[-1] >0 
 
-def macd_signal_down_crossing(df):
+
+def already_down_going_up(df):
     macd = ta.macd(close=df['close'])
-    return macd['MACDh_12_26_9'].iloc[-1] < macd['MACDh_12_26_9'].iloc[-2] and macd['MACDh_12_26_9'].iloc[-1] < 0
-
-def macd_signal_up(df):
-    macd = ta.macd(close=df['close'])
-    return macd['MACDh_12_26_9'].iloc[-1] > 0 
+    return macd['MACDh_12_26_9'].iloc[-1]> macd['MACDh_12_26_9'].iloc[-2] and macd['MACDh_12_26_9'].iloc[-1]<0 
+    
 
 
-def stoc_signal_under_20(df):
+def stoc_signal_above_70(df):
     st= ta.stoch(high=df['high'],low=df['low'],close=df['close'])
-    under_20= st['STOCHd_14_3_3'].iloc[-1] < 20
+    under_20= st['STOCHd_14_3_3'].iloc[-1] >80 and st['STOCHd_14_3_3'].iloc[-2]<80
     return under_20
 
 def above_sma_200(df):
@@ -32,19 +33,18 @@ def above_sma_200(df):
     df['sma50'] = ta.sma(close=df['close'],length=50)
     up = df['sma200'].tail(5).is_monotonic_increasing and df['close'].iloc[-1]>df['sma200'].iloc[-1]
  
- 
 def ema_cross_up(df):
-    df['ema400'] = ta.sma(close=df['close'],length=45)
-    df['ema100'] = ta.sma(close=df['close'],length=15)
-    up = df['ema100'].iloc[-1]>df['ema400'].iloc[-1]and df['ema100'].iloc[-2]<df['ema400'].iloc[-2]
- 
-    return up 
+   df['ema9'] = ta.ema(close=df['close'],length=9)
+   df['ema26'] = ta.ema(close=df['close'],length=26)
+   crossed = df.ema9.iloc[-1]>df.ema26.iloc[-1] and df.ema9.iloc[-2]<df.ema26.iloc[-2]
+   return crossed
+
 def ema_cross_down(df):
-    df['ema400'] = ta.sma(close=df['close'],length=45)
-    df['ema100'] = ta.sma(close=df['close'],length=15)
-    down = df['ema100'].iloc[-1]<df['ema400'].iloc[-1]and df['ema100'].iloc[-2]>df['ema400'].iloc[-2]
- 
-    return down
+    df['ema400'] = ta.ema(close=df['close'],length=9)
+    df['ema100'] = ta.ema(close=df['close'],length=26)
+    df['crossed_down'] = np.where(df['ema100'] < df['ema400'].shift(), True, False)
+    s = df.crossed_down.tail(10).to_list()
+    return True if any(s) else False
 def above_sma_50(df):
     df['sma50'] = ta.sma(close=df['close'],length=50)
     up = df['sma50'].tail(5).is_monotonic_increasing 
@@ -70,8 +70,28 @@ def bb_down(df):
     bba= ta.bbands(close=df['close'])
     return bba['BBL_5_2.0'].iloc[-1]<df['close'].iloc[-1]
     
-# x = get_klines.load_from_file()
+    
+    
+def pre_high(df):
+    pv = df.tail(3).close.max()
+    curr_close = df.close.iloc[-1]
+    prev_close = df.close.iloc[-2]
+    con = curr_close > pv #and prev_close < pv
+    print(con)
+    return con
+def pre_low(df):
+    pv = df.tail(3).close.min()
+    curr_close = df.close.iloc[-1]
+    prev_close = df.close.iloc[-2]
+    con = curr_close < pv #and prev_close < pv
+    print(con)
+    return con
+    
+# x = get_klines.get_kline('BTC-USDT','1d')
 
-# # stoc_signal(x)
-# z = sma_200(x)
+# # # stoc_signal(x)
+# z = ema_cross_down(x)
 # print(z)
+# s = ema_cross_up(x)
+# print(s)
+
