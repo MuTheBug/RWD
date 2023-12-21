@@ -4,12 +4,31 @@ from imports import *
 import get_klines
 def just_crossed_up(df):
     macd = ta.macd(close=df['close'])
-    return macd['MACDh_12_26_9'].iloc[-1] > 0 and macd['MACDh_12_26_9'].iloc[-2]< 0
-    
+    condition_1 =  macd['MACDh_12_26_9'].iloc[-1] > 0 and macd['MACDh_12_26_9'].iloc[-2]< 0
+    condition_2 =  macd['MACDh_12_26_9'].iloc[-2] > 0 and macd['MACDh_12_26_9'].iloc[-3]< 0
+    return condition_1 or condition_2
+
+def is_macd__going_down_on_daily(df):
+    macd = ta.macd(close=df['close'])
+    condition_1 =  macd['MACDh_12_26_9'].iloc[-1] < macd['MACDh_12_26_9'].iloc[-2] and macd['MACDh_12_26_9'].iloc[-2] > macd['MACDh_12_26_9'].iloc[-3] and ['MACDh_12_26_9'].iloc[-1] > 0 
+    condition_2 =  macd['MACDh_12_26_9'].iloc[-1] < macd['MACDh_12_26_9'].iloc[-2] and macd['MACDh_12_26_9'].iloc[-2] < macd['MACDh_12_26_9'].iloc[-3] and  macd['MACDh_12_26_9'].iloc[-3] > macd['MACDh_12_26_9'].iloc[-4] and macd['MACDh_12_26_9'].iloc[-3] >0
+    if condition_1 or condition_2:
+        return True
+    return False
+
+def is_macd__going_up_on_daily(df):
+    macd = ta.macd(close=df['close'])
+    condition_1 =  macd['MACDh_12_26_9'].iloc[-1] > macd['MACDh_12_26_9'].iloc[-2] and macd['MACDh_12_26_9'].iloc[-2] < macd['MACDh_12_26_9'].iloc[-3] and ['MACDh_12_26_9'].iloc[-1] < 0 
+    condition_2 =  macd['MACDh_12_26_9'].iloc[-1] > macd['MACDh_12_26_9'].iloc[-2] and macd['MACDh_12_26_9'].iloc[-2] > macd['MACDh_12_26_9'].iloc[-3] and  macd['MACDh_12_26_9'].iloc[-3] < macd['MACDh_12_26_9'].iloc[-4] and macd['MACDh_12_26_9'].iloc[-3] <0
+    if condition_1 or condition_2:
+        return True
+    return False
 
 def just_crossed_down(df):
     macd = ta.macd(close=df['close'])
-    return macd['MACDh_12_26_9'].iloc[-1] < 0 and macd['MACDh_12_26_9'].iloc[-2]> 0
+    condition_1 =  macd['MACDh_12_26_9'].iloc[-1] < 0 and macd['MACDh_12_26_9'].iloc[-2]> 0
+    condition_2 =  macd['MACDh_12_26_9'].iloc[-2] < 0 and macd['MACDh_12_26_9'].iloc[-3]> 0
+    return condition_1 or condition_2
 
 
 def already_up_going_down(df):
