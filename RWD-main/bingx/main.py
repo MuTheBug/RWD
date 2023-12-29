@@ -7,8 +7,8 @@ def main(symbol):
     daily = get_kline(symbol, '1d')
     four_hours = get_kline(symbol, '4h')
 
-    long = is_up_trend(daily) and just_crossed_up(four_hours)
-    short = is_down_trend(daily) and just_crossed_down(four_hours)
+    long = is_up_trend(daily) and going_up(four_hours)
+    short = is_down_trend(daily) and going_down(four_hours)
     if long:
         print(f'go long on {symbol}++++++++++++++++++++++++++++++++++++')
     elif short:
